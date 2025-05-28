@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { ProductVariant, ProductImage } from '@/interfaces/product'; // Assuming ProductImage is also needed
-
+import { useAuth } from './auth-context';
 // Interface for a line item in the cart
 export interface CartLineItem {
   id: string; // Line item ID
@@ -75,6 +75,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // EXAMPLE: Access auth state. Replace with your actual auth context usage.
+  // const { isLoggedIn, customerAccessToken } = useAuth(); 
+  // For demonstration, let's assume these are available or null if not logged in.
+  // You will need to integrate this with your actual auth system.
+  const {customerAccessToken} = useAuth(); // Placeholder - REPLACE THIS with actual token from your auth context
+
   const processCartData = (apiCart: RawShopifyCart): Cart => {
     return {
       id: apiCart.id,
@@ -93,6 +99,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const response = await fetch(`${apiBaseUrl}/cart/get?cartId=${id}`);
+      // const response = await fetch(`${apiBaseUrl}/cart/get?cartId=${id}`);
       const data = await response.json();
       // Assuming data.cart matches RawShopifyCart structure from the API
       if (data.success && data.cart) {
@@ -136,10 +143,19 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const createCart = async (): Promise<string | null> => {
     setIsLoading(true);
     setError(null);
+    
+    let requestBody = {};
+    // Use the customerAccessToken from the (assumed) auth context
+    if (customerAccessToken) { // Check if customerAccessToken is available
+      requestBody = { customerAccessToken };
+    }
+
     try {
       const response = await fetch(`${apiBaseUrl}/cart/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        // Send an empty body {} for anonymous cart or { customerAccessToken: token } for logged-in user
+        body: Object.keys(requestBody).length > 0 ? JSON.stringify(requestBody) : undefined,
       });
       const data = await response.json();
       if (data.success && data.cart?.id) {

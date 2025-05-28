@@ -7,17 +7,7 @@ export async function onRequest(context) {
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
-  
-  //if (env.DEV === "true") {
-//    headers.append('Access-Control-Allow-Origin', env.FRONT_END_URL_DEV);
-//    headers.append('Access-Control-Allow-Methods', 'POST, OPTIONS');
-//    headers.append('Access-Control-Allow-Headers', 'Content-Type');
-//  }
-  
-  // 处理OPTIONS请求
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers });
-  }
+
   
   // 仅处理POST请求
   if (request.method !== "POST") {
@@ -31,10 +21,30 @@ export async function onRequest(context) {
   }
   
   try {
+    // Parse request body to get optional customerAccessToken
+    let input = {}; // Default to empty input for anonymous cart
+    try {
+        const requestBody = await request.json();
+      console.log('requestBody.customerAccessToken', requestBody.customerAccessToken);
+        if (requestBody && requestBody.customerAccessToken) {
+            input = {
+                buyerIdentity: {
+                    customerAccessToken: requestBody.customerAccessToken
+                }
+            };
+        }
+        // You can also add lines here if you want to create a cart with initial items
+        // e.g., if (requestBody.lines) input.lines = requestBody.lines;
+    } catch {
+        // If request body is empty or not valid JSON, proceed with anonymous cart creation
+        // console.log("No valid request body for cartCreate or empty body, creating anonymous cart.");
+        // No action needed, input remains {} for anonymous cart
+    }
+
     // 创建GraphQL查询
     const query = `
-      mutation cartCreate {
-        cartCreate {
+      mutation cartCreate($input: CartInput) { # Make input argument optional in mutation definition if not always present
+        cartCreate(input: $input) {
           cart {
             id
             checkoutUrl
@@ -90,6 +100,10 @@ export async function onRequest(context) {
       }
     `;
     
+    // Prepare variables for the GraphQL query
+    // The input object might be empty for anonymous cart or contain buyerIdentity for logged-in user
+    const variables = { input };
+
     // 发送请求到Shopify
     const response = await fetch(
       `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
@@ -99,7 +113,10 @@ export async function onRequest(context) {
           'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
         },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({
+          query,
+          variables // Pass the variables object, which contains the input
+        })
       }
     );
     
@@ -134,9 +151,10 @@ export async function onRequest(context) {
     });
     
   } catch (error) {
+    console.error("Error in cartCreate function:", error);
     return new Response(JSON.stringify({
       success: false,
-      message: "创建购物车过程中出现错误",
+      message: "创建购物车过程中出现内部错误",
       error: error.message
     }), {
       status: 500,
