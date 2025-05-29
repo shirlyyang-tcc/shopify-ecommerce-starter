@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Customer } from '@/interfaces/customer';
 
 interface AuthContextType {
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Fetch customer data using the current token
-  const fetchCustomerDataInternal = async (token: string): Promise<Customer | null> => {
+  const fetchCustomerDataInternal = useCallback(async (token: string): Promise<Customer | null> => {
     if (!token) return null;
     setIsLoading(true);
     setError(null);
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [apiBaseUrl]); 
   
   // Function to be exposed via context
   const fetchCustomerData = async () => {

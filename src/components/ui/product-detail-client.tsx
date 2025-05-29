@@ -79,7 +79,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   
 
-  console.log('currentVariant',currentVariant);
   const allImages = useMemo(() => {
     const pImages = product.images || [];
     const variantImage = currentVariant?.image;
