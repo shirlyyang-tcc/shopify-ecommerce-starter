@@ -1,9 +1,8 @@
-# 水晶电商网站
+# Shopify Ecommerce Starter
 
 这是一个基于Next.js、Shopify Storefront API和EdgeOne Pages构建的水晶电商网站模板，提供了完整的产品展示、购物车、用户登录等功能。
 
 ## 技术栈
-
 - 前端框架: Next.js (SSG)
 - UI组件库: 自定义组件
 - 样式: Shadcn-ui
@@ -18,6 +17,7 @@
 - 博客系统
 - 联系表单
 - 用户认证 (登录/注册)
+
 
 ## 开始使用
 
@@ -63,13 +63,8 @@ npm run build
 DEV=true
 FRONT_END_URL_DEV=http://localhost:3000
 NEXT_PUBLIC_API_URL_DEV=http://localhost:8088/
-```
 
-## 部署
-
-此项目可以部署到EdgeOne Pages平台。
-
-```bash
-# 使用EdgeOne CLI部署
-edgeone pages deploy
+SHOPIFY_STORE_DOMAIN=yourshop.myshopify.com
+SHOPIFY_API_VERSION=2025-04
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your storefront api access token
 ```

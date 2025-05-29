@@ -25,7 +25,6 @@ export async function onRequest(context) {
     let input = {}; // Default to empty input for anonymous cart
     try {
         const requestBody = await request.json();
-      console.log('requestBody.customerAccessToken', requestBody.customerAccessToken);
         if (requestBody && requestBody.customerAccessToken) {
             input = {
                 buyerIdentity: {

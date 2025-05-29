@@ -15,6 +15,7 @@ export interface ProductVariant {
   compareAtPrice?: number | null;
   availableForSale: boolean;
   stock: number; // Corresponds to quantityAvailable
+  image: ProductImage;
   // selectedOptions?: Array<{ name: string; value: string; }>; // If needed from API
 }
 

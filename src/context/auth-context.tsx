@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsLoading(false); // No token found
       }
     }
-  }, []);
+  }, [fetchCustomerDataInternal]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);

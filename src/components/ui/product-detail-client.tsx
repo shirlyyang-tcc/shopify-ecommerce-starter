@@ -77,14 +77,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       }
   }, [cartError]);
 
-  if (!product) return <div className="container mx-auto p-4">Product information loading...</div>;
+  
 
-  const activeVariant = currentVariant;
-  const variantImage = activeVariant && activeVariant.image;
-  const productImage = product.featuredImage;
-  const currentImage = variantImage?.url || productImage?.url;
-  const currentImageAlt = variantImage?.altText || productImage?.altText || product.title;
-
+  console.log('currentVariant',currentVariant);
   const allImages = useMemo(() => {
     const pImages = product.images || [];
     const variantImage = currentVariant?.image;
@@ -95,7 +90,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     return images.length > 0 ? images : [{ url: '/placeholder.svg', altText: 'Placeholder Image' }];
   }, [product.images, currentVariant]);
 
-  const activeVariantImage = currentVariant?.image;
   const displayImage = useMemo(() => {
     const variantImg = currentVariant?.image;
     const currentGalleryImg = allImages[currentImageIndex];
@@ -123,6 +117,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     return "In stock";
   }, [currentVariant]);
 
+  if (!product) {
+    return <div className="container mx-auto p-4">Product information loading...</div>;
+  }
   return (
     <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto py-8 px-4">
       {/* Image Gallery */}

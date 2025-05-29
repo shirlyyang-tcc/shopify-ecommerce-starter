@@ -87,7 +87,6 @@ async function getShopifyCustomerData(customerAccessToken, env) {
   `;
 
   const variables =  { customerAccessToken: customerAccessToken };
-  console.log('customerAccessToken', customerAccessToken);
   try {
     const response = await fetch(graphqlEndpoint, {
       method: 'POST',
