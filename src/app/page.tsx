@@ -17,7 +17,7 @@ async function getFeaturedProducts(): Promise<{ products: Product[], error?: str
     const queryParams = new URLSearchParams();
     queryParams.append('first', '4'); // Get 4 as featured products
     
-    const response = await fetch(`${apiUrl}/products?${queryParams.toString()}`, { cache: 'no-store' });
+    const response = await fetch(`${apiUrl}/products/search?${queryParams.toString()}`, { cache: 'no-store' });
     if (!response.ok) {
       return { products: [], error: `HTTP error! status: ${response.status}` };
     }

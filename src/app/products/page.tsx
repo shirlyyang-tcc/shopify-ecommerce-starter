@@ -23,7 +23,7 @@ async function getProducts(cursor: string | null = null): Promise<{ products: Pr
       queryParams.append('after', cursor);
     }
     // console.log(`${apiUrl}/products?${queryParams.toString()}`);
-    const response = await fetch(`${apiUrl}/products?${queryParams.toString()}`, { cache: 'no-store' }); // no-store for dynamic data on each request during build for SSG
+    const response = await fetch(`${apiUrl}/products/search?${queryParams.toString()}`, { cache: 'no-store' }); // no-store for dynamic data on each request during build for SSG
     if (!response.ok) {
       return { products: [], pageInfo: null, error: `HTTP error! status: ${response.status}` };
     }

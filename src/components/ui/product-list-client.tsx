@@ -37,7 +37,7 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
       queryParams.append('first', '8'); // Load 8 products each time
       queryParams.append('after', cursor);
 
-      const response = await fetch(`${apiUrl}/products?${queryParams.toString()}`);
+      const response = await fetch(`${apiUrl}/products/search?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
