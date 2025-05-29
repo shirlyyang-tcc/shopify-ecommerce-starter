@@ -24,7 +24,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/products"
+                  href="/product"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   All Products

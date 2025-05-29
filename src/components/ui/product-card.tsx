@@ -32,7 +32,7 @@ const ProductCard = ({ title, price, image, slug, variantId }: ProductCardProps)
 
   return (
     <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all hover:shadow-lg">
-      <Link href={`/products/${slug}`} className="block aspect-square overflow-hidden">
+      <Link href={`/product/${slug}`} className="block aspect-square overflow-hidden">
         <Image
           src={image}
           alt={title}
@@ -42,7 +42,7 @@ const ProductCard = ({ title, price, image, slug, variantId }: ProductCardProps)
         />
       </Link>
       <div className="p-4">
-        <Link href={`/products/${slug}`}>
+        <Link href={`/product/${slug}`}>
           <h3 className="mb-2 text-lg font-medium text-gray-900">{title}</h3>
         </Link>
         <p className="mb-4 text-xl font-bold text-gray-900">

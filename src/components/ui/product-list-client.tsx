@@ -67,7 +67,7 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
         {products.map((product) => (
           <Card key={product.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="p-0">
-              <Link href={`/products/${product.slug}`} className="block">
+              <Link href={`/product/${product.slug}`} className="block">
                 <Image
                   src={product.image || '/placeholder-image.png'}
                   alt={product.title}
@@ -79,7 +79,7 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
             </CardHeader>
             <CardContent className="p-4">
               <CardTitle className="text-lg font-semibold mb-2 truncate" title={product.title}>
-                <Link href={`/products/${product.slug}`}>{product.title}</Link>
+                <Link href={`/product/${product.slug}`}>{product.title}</Link>
               </CardTitle>
               <p className="text-gray-700 text-sm mb-1">Brand: {product.brand}</p>
               <p className="text-lg font-bold text-primary mt-2">
@@ -90,7 +90,7 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
               </p>
             </CardContent>
             <CardFooter className="p-4 bg-gray-50">
-              <Link href={`/products/${product.slug}`} passHref>
+              <Link href={`/product/${product.slug}`} passHref>
                 <Button variant="outline" className="w-full">
                   View Details <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>

@@ -142,7 +142,7 @@ export default function CartPage() {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              <Link href={`/products/search${item.merchandise.product.handle}`} className="hover:text-blue-600">
+                              <Link href={`/product/search${item.merchandise.product.handle}`} className="hover:text-blue-600">
                                 {item.merchandise.product.title}
                               </Link>
                             </div>
