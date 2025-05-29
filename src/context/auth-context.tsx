@@ -1,17 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-// Define the shape of the customer data we might store
-// This should align with what your /customers/account endpoint returns
-interface Customer {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  // Add other fields like addresses, orders etc. as needed
-}
+import { Customer } from '@/interfaces/customer';
 
 interface AuthContextType {
   customer: Customer | null;

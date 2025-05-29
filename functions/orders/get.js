@@ -3,15 +3,7 @@ export async function onRequest(context) {
 
   const headers = new Headers({
     'Content-Type': 'application/json',
-    // Add CORS headers if you are calling this from a different origin during development
-    // 'Access-Control-Allow-Origin': env.DEV === 'true' ? (env.FRONT_END_URL_DEV || '*') : '',
-    // 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    // 'Access-Control-Allow-Headers': 'Content-Type, Authorization', // Authorization if you pass token in header
   });
-
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers });
-  }
 
   if (request.method !== "POST") {
     return new Response(JSON.stringify({

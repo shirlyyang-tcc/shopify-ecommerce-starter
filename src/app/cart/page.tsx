@@ -23,16 +23,16 @@ export default function CartPage() {
     if (!updateItemQuantity) return;
     
     if (newQuantity < 1) {
-      toast.info("商品数量至少为1。如需移除，请使用删除按钮。");
+      toast.info("Item quantity must be at least 1. If you want to remove, please use the delete button.");
       return;
     }
 
     try {
       await updateItemQuantity(lineId, newQuantity);
-      toast.success("购物车已更新");
+      toast.success("Cart updated successfully");
     } catch (e) {
       console.error("Failed to update quantity from page:", e);
-      toast.error("更新数量失败，请稍后再试。");
+      toast.error("Failed to update quantity, please try again later.");
     }
   };
 
@@ -40,21 +40,21 @@ export default function CartPage() {
     if (!removeItem) return;
     try {
       await removeItem(lineId);
-      toast.success("商品已从购物车移除");
+      toast.success("Item removed from cart successfully");
     } catch (e) {
       console.error("Failed to remove item from page:", e);
-      toast.error("移除商品失败，请稍后再试。");
+      toast.error("Failed to remove item, please try again later.");
     }
   };
   
   const handleClearCart = () => {
     clearCartData(); 
-    toast.info("本地购物车已清空");
+    toast.info("Local cart cleared");
   };
 
   useEffect(() => {
     if (cartContextError) {
-      toast.error(`购物车错误: ${cartContextError}`);
+      toast.error(`Cart error: ${cartContextError}`);
       console.error("Cart page error from context:", cartContextError);
     }
   }, [cartContextError]);
@@ -62,7 +62,7 @@ export default function CartPage() {
   if (isLoading && !cart) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-lg">正在加载购物车...</p>
+        <p className="text-lg">Loading cart...</p>
       </div>
     );
   }
@@ -74,17 +74,17 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">购物车</h1>
+      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
       {cartItems.length === 0 ? (
         <div className="text-center py-16">
           <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" strokeWidth={1}/>
-          <h2 className="text-2xl font-semibold mb-4">您的购物车是空的</h2>
+          <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
           <p className="text-gray-600 mb-8">
-            看起来您还没有将任何商品添加到购物车。
+            It looks like you haven't added any items to your cart yet.
           </p>
           <Link href="/">
-            <Button size="lg">继续购物</Button>
+            <Button size="lg">Continue Shopping</Button>
           </Link>
         </div>
       ) : (
@@ -98,28 +98,28 @@ export default function CartPage() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      商品
+                      Product
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      价格
+                      Price
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      数量
+                      Quantity
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      总计
+                      Total
                     </th>
                     <th scope="col" className="relative px-6 py-3">
-                      <span className="sr-only">操作</span>
+                      <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
@@ -137,7 +137,7 @@ export default function CartPage() {
                                   className="object-cover rounded"
                                 />
                             ) : (
-                                <div className="h-16 w-16 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">无图</div>
+                                <div className="h-16 w-16 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No Image</div>
                             )}
                           </div>
                           <div className="ml-4">
@@ -204,7 +204,7 @@ export default function CartPage() {
 
             <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
               <Link href="/">
-                <Button variant="outline">继续购物</Button>
+                <Button variant="outline">Continue Shopping</Button>
               </Link>
               {cartItems.length > 0 && (
                 <Button 
@@ -213,7 +213,7 @@ export default function CartPage() {
                   disabled={isLoading}
                   className="text-red-600 border-red-500 hover:bg-red-50 hover:text-red-700"
                 >
-                  清空购物车
+                  Clear Cart
                 </Button>
               )}
             </div>
@@ -222,30 +222,29 @@ export default function CartPage() {
           <div className="lg:col-span-4">
             <div className="bg-white rounded-lg shadow p-6 sticky top-24">
               <h2 className="text-lg font-medium text-gray-900 mb-6">
-                订单摘要
+                Order Summary
               </h2>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
-                  <div>小计</div>
+                  <div>Subtotal</div>
                   <div>{formatPrice(subtotal, currencyCode)}</div>
                 </div>
                 {cart?.cost?.totalTaxAmount && cart.cost.totalTaxAmount.amount > 0 && (
                     <div className="flex justify-between text-sm">
-                        <div>税费</div>
+                        <div>Tax</div>
                         <div>{formatPrice(cart.cost.totalTaxAmount.amount, cart.cost.totalTaxAmount.currencyCode)}</div>
                     </div>
                 )}
                 <div className="border-t pt-4 flex justify-between font-bold text-lg">
-                  <div>总计</div>
+                  <div>Total</div>
                   <div>{formatPrice(total, currencyCode)}</div>
                 </div>
                 <Button 
-                    asChild 
                     className="w-full mt-6 py-3 text-base"
                     disabled={isLoading || cartItems.length === 0 || !cart?.checkoutUrl}
                 >
                   <a href={cart?.checkoutUrl} target="_blank" rel="noopener noreferrer">
-                    前往结算
+                    Proceed to Checkout
                   </a>
                 </Button>
               </div>

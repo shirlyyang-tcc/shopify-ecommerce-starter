@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -20,6 +20,14 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && isAuthenticated()) {
+      setIsRedirecting(true);
+      router.replace('/account');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -54,13 +62,11 @@ export default function RegisterPage() {
     }
   };
 
-  // If user is already authenticated, redirect them from register page
-  if (typeof window !== "undefined" && isAuthenticated()) {
-    router.replace('/account');
+  if (isRedirecting || isLoading) {
     return (
-        <div className="container mx-auto px-4 py-12 text-center">
-            <p>您已登录。正在重定向到您的账户...</p>
-        </div>
+      <div className="container mx-auto px-4 py-12 text-center">
+        <p>您已登录。正在重定向到您的账户...</p>
+      </div>
     );
   }
 

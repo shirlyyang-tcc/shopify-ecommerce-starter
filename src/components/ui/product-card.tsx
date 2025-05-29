@@ -5,6 +5,8 @@ import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./button";
+import { useCart } from "@/context/cart-context";
+import { toast } from "sonner";
 
 export interface ProductCardProps {
   id: string;
@@ -12,12 +14,20 @@ export interface ProductCardProps {
   price: number;
   image: string;
   slug: string;
+  variantId: string;
 }
 
-const ProductCard = ({ id, title, price, image, slug }: ProductCardProps) => {
-  const addToCart = () => {
-    // 在实际应用中，这里会调用添加到购物车的函数
-    console.log(`添加商品 ${id} 到购物车`);
+const ProductCard = ({ title, price, image, slug, variantId }: ProductCardProps) => {
+  const { addItem } = useCart();
+
+  const addToCart = async () => {
+    try {
+      await addItem(variantId, 1);
+      toast.success(`${title} has been added to cart!`);
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      toast.error("Failed to add to cart. Please try again later.");
+    }
   };
 
   return (
@@ -43,7 +53,7 @@ const ProductCard = ({ id, title, price, image, slug }: ProductCardProps) => {
           className="w-full"
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
-          加入购物车
+          Add to Cart
         </Button>
       </div>
     </div>

@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "水晶商城 - 高品质水晶",
-  description: "提供各种品牌的高品质水晶，满足您的好运需求。",
+  title: "Crystal Mall - High-Quality Crystals",
+  description: "Offering high-quality crystals from various brands, meeting your good luck needs.",
 };
 
 export default function RootLayout({

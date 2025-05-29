@@ -57,15 +57,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const handleAddToCart = async () => {
     if (!currentVariant?.availableForSale) {
-      toast.error(currentVariant ? "该商品规格暂无库存" : "请先选择商品规格");
+      toast.error(currentVariant ? "This variant is out of stock" : "Please select a variant");
       return;
     }
     if (currentVariant) {
       try {
         await addItem(currentVariant.id, quantity);
-        toast.success(`${product.title} (${currentVariant.title}) 已添加到购物车`);
+        toast.success(`${product.title} (${currentVariant.title}) added to cart`);
       } catch (e) {
-        toast.error("添加到购物车失败，请稍后重试");
+        toast.error("Failed to add to cart, please try again later");
         console.error("Failed to add to cart:", e);
       }
     }
@@ -73,11 +73,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   
   useEffect(()=> {
       if(cartError){
-          toast.error(`购物车操作失败: ${cartError}`);
+          toast.error(`Cart operation failed: ${cartError}`);
       }
   }, [cartError]);
 
-  if (!product) return <div className="container mx-auto p-4">商品信息加载中...</div>;
+  if (!product) return <div className="container mx-auto p-4">Product information loading...</div>;
 
   const activeVariant = currentVariant;
   const variantImage = activeVariant && activeVariant.image;
@@ -117,10 +117,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   };
 
   const stockMessage = useMemo(() => {
-    if (!currentVariant) return "选择一个规格";
-    if (!currentVariant.availableForSale) return "暂无库存";
-    if (typeof currentVariant.stock === 'number' && currentVariant.stock <= 5) return `仅剩 ${currentVariant.stock} 件`;
-    return "库存充足";
+    if (!currentVariant) return "Select a variant";
+    if (!currentVariant.availableForSale) return "Out of stock";
+    if (typeof currentVariant.stock === 'number' && currentVariant.stock <= 5) return `Only ${currentVariant.stock} left`;
+    return "In stock";
   }, [currentVariant]);
 
   return (
@@ -180,7 +180,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       <div className="flex flex-col space-y-6">
         <div>
           <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">{product.title}</h1>
-          <p className="text-lg text-gray-600 mt-2">由 {product.vendor} 提供</p>
+          <p className="text-lg text-gray-600 mt-2">By {product.vendor}</p>
         </div>
 
         <div className="text-3xl font-semibold">
@@ -200,7 +200,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   onValueChange={(value: string) => handleOptionChange(option.name, value)}
                 >
                   <SelectTrigger id={option.name} className="mt-1">
-                    <SelectValue placeholder={`选择 ${option.name}`} />
+                    <SelectValue placeholder={`Select ${option.name}`} />
                   </SelectTrigger>
                   <SelectContent>
                     {option.values.map((value) => (
@@ -263,7 +263,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             disabled={isCartLoading || !currentVariant?.availableForSale}
             className="flex-1"
           >
-            {isCartLoading ? "添加中..." : (currentVariant?.availableForSale ? "添加到购物车" : (currentVariant ? "已售罄" : "选择规格"))}
+            {isCartLoading ? "Adding..." : (currentVariant?.availableForSale ? "Add to cart" : (currentVariant ? "Sold out" : "Select variant"))}
           </Button>
         </div>
         
@@ -277,7 +277,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Product Description */}
         {product.descriptionHtml || product.description ? (
           <div>
-            <h3 className="text-xl font-semibold mb-2">商品详情</h3>
+            <h3 className="text-xl font-semibold mb-2">Product Details</h3>
             <div
               className="prose prose-sm max-w-none text-gray-700"
               dangerouslySetInnerHTML={{ __html: product.descriptionHtml || product.description || '' }}

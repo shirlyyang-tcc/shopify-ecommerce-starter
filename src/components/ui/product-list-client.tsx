@@ -6,24 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
-
-// 定义产品接口以匹配API响应
-interface Product {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  image: string;
-  price: number;
-  currencyCode: string;
-  variantId: string;
-  availableForSale: boolean;
-  stock: number;
-  brand: string;
-  collections: Array<{ id: string; title: string; handle: string; }>;
-  productType: string;
-  tags: string[];
-}
+import { Product } from '@/types/product';
 
 interface PageInfo {
   hasNextPage: boolean;
@@ -51,7 +34,7 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
         : ''; // Relative path for production
       
       const queryParams = new URLSearchParams();
-      queryParams.append('first', '8'); // 每次加载8个产品
+      queryParams.append('first', '8'); // Load 8 products each time
       queryParams.append('after', cursor);
 
       const response = await fetch(`${apiUrl}/products?${queryParams.toString()}`);
@@ -64,15 +47,15 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
         setProducts(prevProducts => [...prevProducts, ...data.products]);
         setPageInfo(data.pageInfo);
       } else {
-        throw new Error(data.message || "获取更多产品失败");
+        throw new Error(data.message || "Failed to load more products");
       }
     } catch (e: unknown) {
       if (e instanceof Error) {
         setError(e.message);
       } else {
-        setError("发生未知错误");
+        setError("An unknown error occurred");
       }
-      console.error("获取更多产品失败:", e);
+      console.error("Failed to load more products:", e);
     } finally {
       setLoadingMore(false);
     }
@@ -98,35 +81,34 @@ export default function ProductListClient({ initialProducts, initialPageInfo }: 
               <CardTitle className="text-lg font-semibold mb-2 truncate" title={product.title}>
                 <Link href={`/products/${product.slug}`}>{product.title}</Link>
               </CardTitle>
-              <p className="text-gray-700 text-sm mb-1">品牌: {product.brand}</p>
-              <p className="text-gray-700 text-sm mb-1">类型: {product.productType}</p>
+              <p className="text-gray-700 text-sm mb-1">Brand: {product.brand}</p>
               <p className="text-lg font-bold text-primary mt-2">
                 {product.price.toFixed(2)} {product.currencyCode}
               </p>
               <p className={`text-sm ${product.availableForSale && product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {product.availableForSale && product.stock > 0 ? `有货 (库存: ${product.stock})` : '缺货'}
+                {product.availableForSale && product.stock > 0 ? `In stock (Stock: ${product.stock})` : 'Out of stock'}
               </p>
             </CardContent>
             <CardFooter className="p-4 bg-gray-50">
               <Link href={`/products/${product.slug}`} passHref>
                 <Button variant="outline" className="w-full">
-                  查看详情 <ChevronRight className="ml-2 h-4 w-4" />
+                  View Details <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </CardFooter>
           </Card>
         ))}
       </div>
-      {error && <div className="text-center py-4 text-red-500">加载更多产品时出错: {error}</div>}
+      {error && <div className="text-center py-4 text-red-500">Error loading more products: {error}</div>}
       {pageInfo?.hasNextPage && (
         <div className="mt-8 text-center">
           <Button onClick={() => fetchMoreProducts(pageInfo.endCursor)} disabled={loadingMore}>
-            {loadingMore ? '加载中...' : '加载更多'}
+            {loadingMore ? 'Loading...' : 'Load More'}
           </Button>
         </div>
       )}
       {!loadingMore && products.length === 0 && !pageInfo?.hasNextPage && !error && (
-        <div className="text-center py-10 text-gray-500">暂无商品。</div>
+        <div className="text-center py-10 text-gray-500">No products.</div>
       )}
     </>
   );

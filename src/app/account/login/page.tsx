@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -11,16 +11,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
 
-// export const metadata: Metadata = { // Cannot export metadata from client component
-//   title: '登录 - 水晶商城',
-//   description: '登录您的水晶商城账户',
-// };
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading, error, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && isAuthenticated()) {
+      setIsRedirecting(true);
+      router.replace('/account');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -35,14 +39,12 @@ export default function LoginPage() {
     // Error will be handled by the error state from useAuth()
   };
   
-  // If user is already authenticated, redirect them from login page
-  if (typeof window !== "undefined" && isAuthenticated()) {
-    router.replace('/account');
+  if (isRedirecting || isLoading) {
     return (
-        <div className="container mx-auto px-4 py-12 text-center">
-            <p>您已登录。正在重定向到您的账户...</p>
-        </div>
-    ); 
+      <div className="container mx-auto px-4 py-12 text-center">
+        <p>您已登录。正在重定向到您的账户...</p>
+      </div>
+    );
   }
 
   return (

@@ -15,42 +15,42 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-gray-900">水晶商城</span>
+              <span className="text-xl font-bold text-gray-900">Crystal Mall</span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/"
                 className="border-transparent text-gray-900 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
-                首页
+                Home
               </Link>
               <Link
                 href="/products"
                 className="border-transparent text-gray-900 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
-                全部产品
+                All Products
               </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Link href="/account" title="我的账户">
+            <Link href="/account" title="My Account">
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
-                <span className="sr-only">我的账户</span>
+                <span className="sr-only">My Account</span>
               </Button>
             </Link>
-            <Link href="/cart" title="购物车">
+            <Link href="/cart" title="Shopping Cart">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="sr-only">购物车</span>
+                <span className="sr-only">Shopping Cart</span>
               </Button>
             </Link>
           </div>
           <div className="flex items-center sm:hidden">
-            <Link href="/cart" title="购物车" className="mr-2">
+            <Link href="/cart" title="Shopping Cart" className="mr-2">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-6 w-6" />
-                <span className="sr-only">购物车</span>
+                <span className="sr-only">Shopping Cart</span>
               </Button>
             </Link>
             <button
@@ -60,7 +60,7 @@ const Navbar = () => {
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <span className="sr-only">打开菜单</span>
+              <span className="sr-only">Open menu</span>
               <svg
                 className={cn("h-6 w-6", isMenuOpen ? "hidden" : "block")}
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,28 +106,28 @@ const Navbar = () => {
             onClick={() => setIsMenuOpen(false)}
             className="border-transparent text-gray-900 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
           >
-            首页
+            Home
           </Link>
           <Link
             href="/products"
             onClick={() => setIsMenuOpen(false)}
             className="border-transparent text-gray-900 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
           >
-            全部产品
+            All Products
           </Link>
           <Link
             href="/contact"
             onClick={() => setIsMenuOpen(false)}
             className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
           >
-            联系我们
+            Contact Us
           </Link>
           <Link
             href="/blog"
             onClick={() => setIsMenuOpen(false)}
             className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
           >
-            博客
+            Blog
           </Link>
         </div>
         <div className="pt-4 pb-3 border-t border-gray-200">
@@ -138,7 +138,7 @@ const Navbar = () => {
               className="group flex items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
             >
               <User className="mr-3 h-6 w-6 text-gray-500 group-hover:text-gray-600" />
-              我的账户
+              My Account
             </Link>
             <Link
               href="/account/login"
@@ -146,7 +146,7 @@ const Navbar = () => {
               className="group flex items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
             >
               <LogIn className="mr-3 h-6 w-6 text-gray-500 group-hover:text-gray-600" />
-              登录 / 注册
+              Login / Register
             </Link>
           </div>
         </div>

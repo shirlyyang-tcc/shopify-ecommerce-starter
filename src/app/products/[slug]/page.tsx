@@ -139,7 +139,7 @@ async function getProductBySlug(slug: string): Promise<Product | null> {
 
 // 4. 更新 generateMetadata
 export async function generateMetadata(
-  { params }: { params: { slug: string } }, 
+  { params }: { params: Promise<{ slug: string }> }, 
   // parent: ResolvingMetadata // Commented out as it's not used
 ): Promise<Metadata> {
   const {slug} = await params;
@@ -149,23 +149,22 @@ export async function generateMetadata(
       title: "产品未找到",
       description: "抱歉，我们找不到您请求的产品。",
       alternates: {
-        canonical: `/products/${params.slug}`,
+        canonical: `/products/${slug}`,
       },
     };
   }
   
   return {
-    title: `${product.title} - 水晶商城`, 
+    title: `${product.title} - Crystal Mall`, 
     description: product.descriptionHtml ? product.descriptionHtml.substring(0, 160) : (product.description || '').substring(0,160), 
     alternates: {
       canonical: `/products/${product.slug}`,
     },
-    // @ts-expect-error Type '"product"' is not assignable to type OpenGraphType | undefined. However, "product" is a valid Open Graph type.
     openGraph: {
       title: product.title,
       description: product.descriptionHtml ? product.descriptionHtml.substring(0, 160) : (product.description || '').substring(0,160),
       url: `/products/${product.slug}`,
-      siteName: '水晶商城', 
+      siteName: 'Crystal Mall', 
       // price: product.price,
       images: [
         {
@@ -181,7 +180,7 @@ export async function generateMetadata(
 }
 
 // 5. 页面组件保持不变，它已经使用了 getProductBySlug
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }>  }) {
   const {slug} = await params;
   const product = await getProductBySlug(slug);
 

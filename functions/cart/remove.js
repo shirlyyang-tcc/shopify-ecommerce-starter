@@ -7,17 +7,7 @@ export async function onRequest(context) {
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
-  
-  //if (env.DEV === "true") {
-//    headers.append('Access-Control-Allow-Origin', env.FRONT_END_URL_DEV);
-//    headers.append('Access-Control-Allow-Methods', 'POST, OPTIONS');
-//    headers.append('Access-Control-Allow-Headers', 'Content-Type');
-//  }
-  
-  // 处理OPTIONS请求
-  if (request.method === "OPTIONS") {
-    return new Response(null, { headers });
-  }
+
   
   // 仅处理POST请求
   if (request.method !== "POST") {
