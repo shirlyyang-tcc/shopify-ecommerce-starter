@@ -62,6 +62,7 @@ globs: **/*.{ts,tsx,js,jsx,toml,json}
      - Front end request EdgeOne functions API with `fetch`.
        - When env.DEV equals true, fetch url format is `${env.VITE_API_URL_DEV}/path-to-api`
        - When env.DEV equals true, redirect url in EdgeOne functions is `${env.FRONT_END_URL_DEV}/path-to-redirect`
+     - Front end pages **can not** share same path with functions.
   5. Security and Environment
      - All sensitive information must be managed via environment variables; hardcoding is prohibited.
      - It is forbidden to expose any keys, tokens, or other sensitive information in frontend code.

@@ -1,38 +1,35 @@
 import ProductGrid from "@/components/ui/product-grid";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Product } from "@/types/product";
+import { Product } from "@/interfaces/product";
+import { getProducts } from '@/lib/shopify';
+import type { ProductCardProps } from "@/components/ui/product-card";
 
-// Data fetching function (similar to products/page.tsx, but may have different parameters, such as fetching a few featured products)
-async function getFeaturedProducts(): Promise<{ products: Product[], error?: string }> {
+// 将 Product 转换为 ProductCardProps
+function convertToProductCardProps(product: Product): ProductCardProps {
+  return {
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    image: product.featuredImage?.url || product.images[0]?.url || '/placeholder.svg',
+    slug: product.slug,
+    variantId: product.variantId || product.variants[0]?.id || '',
+  };
+}
+
+// 获取精选产品
+async function getFeaturedProducts(): Promise<{ products: ProductCardProps[], error?: string }> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_DEV === 'true' 
-      ? process.env.NEXT_PUBLIC_API_URL_DEV 
-      : (process.env.NEXT_PUBLIC_API_URL || '');
-
-    if (!apiUrl && process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEV !== 'true'){
-      console.warn("API URL for production is not set. Falling back to relative path for featured products. Ensure NEXT_PUBLIC_API_URL is set or your Edge Function is configured correctly.")
-    }
-    
-    const queryParams = new URLSearchParams();
-    queryParams.append('first', '4'); // Get 4 as featured products
-    
-    const response = await fetch(`${apiUrl}/products/search?${queryParams.toString()}`, { cache: 'no-store' });
-    if (!response.ok) {
-      return { products: [], error: `HTTP error! status: ${response.status}` };
-    }
-    const data = await response.json();
-    if (data.success) {
-      return { products: data.products };
-    } else {
-      return { products: [], error: data.message || "Failed to get featured products" };
-    }
+    const allProducts = await getProducts();
+    // 获取前4个产品作为精选产品，并转换为 ProductCardProps
+    const featuredProducts = allProducts.slice(0, 4).map(convertToProductCardProps);
+    return { products: featuredProducts };
   } catch (e: unknown) {
-    let errorMessage = "An unknown error occurred while getting featured products";
+    let errorMessage = "获取精选产品时发生错误";
     if (e instanceof Error) {
       errorMessage = e.message;
     }
-    console.error("Failed to get featured products (server-side):", e);
+    console.error("获取精选产品失败:", e);
     return { products: [], error: errorMessage };
   }
 }
