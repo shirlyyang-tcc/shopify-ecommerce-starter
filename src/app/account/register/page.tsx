@@ -35,18 +35,18 @@ export default function RegisterPage() {
     setSuccessMessage(null);
 
     if (!email || !password || !firstName) { // Basic validation
-      setFormError("请输入名字、邮箱和密码。");
+      setFormError("Please enter your name, email, and password.");
       return;
     }
     if (password.length < 5) {
-      setFormError("密码至少需要5个字符。");
+      setFormError("Password must be at least 5 characters.");
       return;
     }
 
     const result = await register({ firstName, lastName, email, password });
 
     if (result?.success) {
-      setSuccessMessage("账户创建成功！现在您可以登录了。");
+      setSuccessMessage("Account created successfully! You can now log in.");
       // Optionally, redirect to login or clear form
       // router.push('/account/login');
       setFirstName('');
@@ -58,14 +58,14 @@ export default function RegisterPage() {
     } else if (authError) {
       setFormError(authError);
     } else {
-      setFormError("注册过程中发生未知错误。");
+      setFormError("An unknown error occurred during registration.");
     }
   };
 
   if (isRedirecting || isLoading) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <p>您已登录。正在重定向到您的账户...</p>
+        <p>You have logged in. Redirecting to your account...</p>
       </div>
     );
   }
@@ -74,9 +74,9 @@ export default function RegisterPage() {
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">创建您的账户</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Create Your Account</CardTitle>
           <CardDescription className="mt-2">
-            填写以下信息以注册新账户。
+            Fill in the following information to register a new account.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -84,7 +84,7 @@ export default function RegisterPage() {
             {formError && (
               <Alert variant="destructive">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>注册失败</AlertTitle>
+                <AlertTitle>Registration Failed</AlertTitle>
                 <AlertDescription>
                   {formError}
                 </AlertDescription>
@@ -93,19 +93,19 @@ export default function RegisterPage() {
             {successMessage && (
               <Alert variant="default" className="bg-green-50 border-green-300 text-green-700">
                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertTitle className="font-semibold">注册成功</AlertTitle>
+                <AlertTitle className="font-semibold">Registration Successful</AlertTitle>
                 <AlertDescription>
-                  {successMessage} 请前往 <Link href="/account/login" className="font-medium hover:underline">登录页面</Link>。
+                  {successMessage} Please go to the <Link href="/account/login" className="font-medium hover:underline">login page</Link>.
                 </AlertDescription>
               </Alert>
             )}
              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="firstName">名字</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input 
                   id="firstName" 
                   type="text" 
-                  placeholder="张" 
+                  placeholder="John" 
                   required 
                   value={firstName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
@@ -113,11 +113,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">姓氏 (可选)</Label>
+                <Label htmlFor="lastName">Last Name (Optional)</Label>
                 <Input 
                   id="lastName" 
                   type="text" 
-                  placeholder="三" 
+                  placeholder="Doe" 
                   value={lastName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
                   disabled={isLoading || !!successMessage}
@@ -125,11 +125,11 @@ export default function RegisterPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">Email</Label>
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="you@example.com" 
+                placeholder="john.doe@example.com" 
                 required 
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
@@ -137,7 +137,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码 (至少5位)</Label>
+              <Label htmlFor="password">Password (At least 5 characters)</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -151,12 +151,12 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col items-center space-y-4 p-6 pt-0">
             <Button type="submit" className="w-full text-base py-3" disabled={isLoading || !!successMessage}>
-              {isLoading ? '正在注册...' : '注册'}
+              {isLoading ? 'Registering...' : 'Register'}
             </Button>
             <div className="text-center text-sm">
-              已经有账户了？{' '}
+              Already have an account?{' '}
               <Link href="/account/login" className="font-medium text-blue-600 hover:underline">
-                前往登录
+                Go to login
               </Link>
             </div>
           </CardFooter>

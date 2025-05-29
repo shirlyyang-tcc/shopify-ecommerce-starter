@@ -29,7 +29,7 @@ export default function LoginPage() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!email || !password) {
-      alert("请输入邮箱和密码。"); // Basic validation, can be improved
+      alert("Please enter your email and password."); // Basic validation, can be improved
       return;
     }
     const result = await login(email, password);
@@ -42,7 +42,7 @@ export default function LoginPage() {
   if (isRedirecting || isLoading) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <p>您已登录。正在重定向到您的账户...</p>
+        <p>You have logged in. Redirecting to your account...</p>
       </div>
     );
   }
@@ -51,9 +51,9 @@ export default function LoginPage() {
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">登录您的账户</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Login to Your Account</CardTitle>
           <CardDescription className="mt-2">
-            输入您的邮箱和密码以继续。
+            Enter your email and password to continue.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -61,14 +61,14 @@ export default function LoginPage() {
             {error && (
               <Alert variant="destructive">
                 <Terminal className="h-4 w-4" />
-                <AlertTitle>登录失败</AlertTitle>
+                <AlertTitle>Login Failed</AlertTitle>
                 <AlertDescription>
                   {error}
                 </AlertDescription>
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">Email</Label>
               <Input 
                 id="email" 
                 type="email" 
@@ -80,7 +80,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -94,12 +94,12 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col items-center space-y-4 p-6 pt-0">
             <Button type="submit" className="w-full text-base py-3" disabled={isLoading}>
-              {isLoading ? '正在登录...' : '登录'}
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
             <div className="text-center text-sm">
-              还没有账户？{' '}
+              Don't have an account yet?{' '}
               <Link href="/account/register" className="font-medium text-blue-600 hover:underline">
-                立即注册
+                Register now
               </Link>
             </div>
           </CardFooter>
