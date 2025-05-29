@@ -1,6 +1,9 @@
 import ProductListClient from '@/components/ui/product-list-client';
 import { getProducts } from '@/lib/shopify';
 
+// 这个函数告诉 Next.js 在构建时需要预渲染哪些路径
+export const dynamic = 'force-static';
+export const revalidate = 3600; // 每小时重新验证一次
 
 export const metadata = {
   title: 'All Products - Good Fortune Crystal Mall',
