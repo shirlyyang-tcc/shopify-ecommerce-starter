@@ -20,6 +20,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Crystal Mall - High-Quality Crystals",
   description: "Offering high-quality crystals from various brands, meeting your good luck needs.",
+  icons: {
+    icon: [
+      { url: '/favicon.svg' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

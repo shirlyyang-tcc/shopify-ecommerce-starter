@@ -35,9 +35,9 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <address className="text-gray-400 not-italic">
-              <p>Address: Beijing Chaoyang District Sanlitun</p>
-              <p>Phone: 010-12345678</p>
-              <p>Email: contact@sportshoes.com</p>
+              <p>Address: 123 Main St, New York, NY 10001</p>
+              <p>Phone: 123-456-7890</p>
+              <p>Email: contact@crystalaaa.com</p>
             </address>
           </div>
         </div>
