@@ -8,7 +8,7 @@ interface Props {
   }>;
 }
 
-// 这个函数告诉 Next.js 在构建时需要预渲染哪些产品页面
+// This function tells Next.js which product pages to pre-render at build time
 export async function generateStaticParams() {
   const products = await getProducts();
   
@@ -17,7 +17,7 @@ export async function generateStaticParams() {
   }));
 }
 
-// 生成页面的元数据
+// Generate page metadata
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const products = await getProducts();
   const {slug} = await params;
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// 页面组件
+// Page component
 export default async function ProductPage({ params }: Props) {
   const products = await getProducts();
   const {slug} = await params;

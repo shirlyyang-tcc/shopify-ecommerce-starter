@@ -1,7 +1,7 @@
 import ProductListClient from '@/components/ui/product-list-client';
 import { getProducts } from '@/lib/shopify';
 
-// 配置静态生成
+// Configure static generation
 export const dynamic = 'force-static';
 export const dynamicParams = false;
 export const preferredRegion = 'auto';

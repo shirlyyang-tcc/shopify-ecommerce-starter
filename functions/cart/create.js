@@ -1,15 +1,15 @@
-// 创建购物车函数
+// Create cart function
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // 添加CORS头
+  // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
   
-  // 仅处理POST请求
+  // Only handle POST requests
   if (request.method !== "POST") {
     return new Response(JSON.stringify({
       success: false,
@@ -40,7 +40,7 @@ export async function onRequest(context) {
         // No action needed, input remains {} for anonymous cart
     }
 
-    // 创建GraphQL查询
+    // Create GraphQL query
     const query = `
       mutation cartCreate($input: CartInput) { # Make input argument optional in mutation definition if not always present
         cartCreate(input: $input) {
@@ -103,7 +103,7 @@ export async function onRequest(context) {
     // The input object might be empty for anonymous cart or contain buyerIdentity for logged-in user
     const variables = { input };
 
-    // 发送请求到Shopify
+    // Send request to Shopify
     const response = await fetch(
       `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
       {
@@ -121,7 +121,7 @@ export async function onRequest(context) {
     
     const responseData = await response.json();
     
-    // 检查是否有错误
+    // Check for errors
     if (responseData.errors || 
         (responseData.data && 
          responseData.data.cartCreate && 
@@ -140,7 +140,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 返回成功响应
+    // Return successful response
     return new Response(JSON.stringify({
       success: true,
       cart: responseData.data.cartCreate.cart

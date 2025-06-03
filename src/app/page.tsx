@@ -5,7 +5,7 @@ import { Product } from "@/interfaces/product";
 import { getProducts } from '@/lib/shopify';
 import type { ProductCardProps } from "@/components/ui/product-card";
 
-// 将 Product 转换为 ProductCardProps
+// Convert Product to ProductCardProps
 function convertToProductCardProps(product: Product): ProductCardProps {
   return {
     id: product.id,
@@ -17,19 +17,19 @@ function convertToProductCardProps(product: Product): ProductCardProps {
   };
 }
 
-// 获取精选产品
+// Get featured products
 async function getFeaturedProducts(): Promise<{ products: ProductCardProps[], error?: string }> {
   try {
     const allProducts = await getProducts();
-    // 获取前4个产品作为精选产品，并转换为 ProductCardProps
+    // Get first 4 products as featured products and convert to ProductCardProps
     const featuredProducts = allProducts.slice(0, 4).map(convertToProductCardProps);
     return { products: featuredProducts };
   } catch (e: unknown) {
-    let errorMessage = "获取精选产品时发生错误";
+    let errorMessage = "An error occurred while fetching featured products";
     if (e instanceof Error) {
       errorMessage = e.message;
     }
-    console.error("获取精选产品失败:", e);
+    console.error("Failed to fetch featured products:", e);
     return { products: [], error: errorMessage };
   }
 }

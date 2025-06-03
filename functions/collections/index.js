@@ -1,22 +1,22 @@
-// 获取商品分类列表 - 使用Shopify Storefront API
+// Get collection list - Using Shopify Storefront API
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // 添加CORS头
+  // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  // 处理GET请求
+  // Handle GET request
   if (request.method === "GET") {
     try {
-      // 获取查询参数
+      // Get query parameters
       const url = new URL(request.url);
       const first = parseInt(url.searchParams.get('first') || '20', 10);
       const after = url.searchParams.get('after') || null;
       
-      // 创建GraphQL查询
+      // Create GraphQL query
       const graphqlQuery = `
         query getCollections($first: Int!, $after: String) {
           collections(first: $first, after: $after) {
@@ -46,13 +46,13 @@ export async function onRequest(context) {
         }
       `;
       
-      // 准备变量
+      // Prepare variables
       const variables = {
         first,
         after
       };
       
-      // 发送请求到Shopify
+      // Send request to Shopify
       const response = await fetch(
         `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
         {
@@ -70,7 +70,7 @@ export async function onRequest(context) {
       
       const responseData = await response.json();
       
-      // 检查是否有错误
+      // Check for errors
       if (responseData.errors) {
         return new Response(JSON.stringify({
           success: false,
@@ -81,7 +81,7 @@ export async function onRequest(context) {
         });
       }
       
-      // 处理分类数据并格式化成符合前端需要的格式
+      // Process collection data and format for frontend
       const collections = responseData.data.collections.edges.map(edge => {
         const { node } = edge;
         
@@ -98,7 +98,7 @@ export async function onRequest(context) {
         };
       });
       
-      // 返回分类列表与分页信息
+      // Return collection list and pagination info
       return new Response(JSON.stringify({
         success: true,
         collections,
@@ -118,7 +118,7 @@ export async function onRequest(context) {
     }
   }
   
-  // 处理不支持的请求方法
+  // Handle unsupported request methods
   return new Response(JSON.stringify({
     success: false,
     message: "Method not allowed"

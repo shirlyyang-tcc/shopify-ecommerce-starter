@@ -161,12 +161,12 @@ export async function getProducts(): Promise<Product[]> {
     }>({
       query,
       variables: {
-        first: 100, // 获取前100个产品，可以根据需要调整
+        first: 100, // Get first 100 products, can be adjusted as needed
       },
     });
 
     return data.products.edges.map(({ node }) => {
-      // 处理图片数据
+      // Process image data
       const images: ProductImage[] = node.images.edges.map(edge => ({
         url: edge.node.url,
         altText: edge.node.altText || undefined,
@@ -174,7 +174,7 @@ export async function getProducts(): Promise<Product[]> {
         height: edge.node.height,
       }));
 
-      // 处理变体数据
+      // Process variant data
       const variants: ProductVariant[] = node.variants.edges.map(edge => ({
         id: edge.node.id,
         title: edge.node.title,
@@ -189,7 +189,7 @@ export async function getProducts(): Promise<Product[]> {
           altText: edge.node.image.altText || undefined,
           width: edge.node.image.width,
           height: edge.node.image.height,
-        } : images[0], // 如果变体没有图片，使用第一个产品图片
+        } : images[0], // If variant has no image, use first product image
       }));
 
       const defaultVariant = variants[0];
@@ -208,8 +208,8 @@ export async function getProducts(): Promise<Product[]> {
         variants,
         defaultVariant,
         options: node.options,
-        collections: [], // 如果需要collections数据，需要在GraphQL查询中添加相关字段
-        // 从默认变体中获取的简化字段
+        collections: [], // If collections data needed, add related fields in GraphQL query
+        // Get simplified fields from default variant
         price: defaultVariant.price,
         currencyCode: defaultVariant.currencyCode,
         availableForSale: defaultVariant.availableForSale,

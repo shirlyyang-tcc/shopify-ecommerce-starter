@@ -1,15 +1,15 @@
-// 获取购物车信息函数
+// Get cart information function
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // 添加CORS头
+  // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
   
-  // 仅处理GET请求
+  // Only handle GET requests
   if (request.method !== "GET") {
     return new Response(JSON.stringify({
       success: false,
@@ -21,11 +21,11 @@ export async function onRequest(context) {
   }
   
   try {
-    // 从URL获取购物车ID
+    // Get cart ID from URL
     const url = new URL(request.url);
     const cartId = url.searchParams.get('cartId');
     
-    // 参数验证
+    // Parameter validation
     if (!cartId) {
       return new Response(JSON.stringify({
         success: false,
@@ -36,7 +36,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 创建GraphQL查询
+    // Create GraphQL query
     const query = `
       query getCart($cartId: ID!) {
         cart(id: $cartId) {
@@ -89,12 +89,12 @@ export async function onRequest(context) {
       }
     `;
     
-    // 准备变量
+    // Prepare variables
     const variables = {
       cartId
     };
     
-    // 发送请求到Shopify
+    // Send request to Shopify
     const response = await fetch(
       `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
       {
@@ -112,7 +112,7 @@ export async function onRequest(context) {
     
     const responseData = await response.json();
     
-    // 检查是否有错误
+    // Check for errors
     if (responseData.errors) {
       return new Response(JSON.stringify({
         success: false,
@@ -123,7 +123,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 检查购物车是否存在
+    // Check if cart exists
     if (!responseData.data || !responseData.data.cart) {
       return new Response(JSON.stringify({
         success: false,
@@ -134,7 +134,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 返回成功响应
+    // Return successful response
     return new Response(JSON.stringify({
       success: true,
       cart: responseData.data.cart

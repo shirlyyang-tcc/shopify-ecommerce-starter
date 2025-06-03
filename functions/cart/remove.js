@@ -1,15 +1,15 @@
-// 从购物车移除商品函数
+// Remove item from cart function
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // 添加CORS头
+  // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
   
-  // 仅处理POST请求
+  // Only handle POST requests
   if (request.method !== "POST") {
     return new Response(JSON.stringify({
       success: false,
@@ -21,10 +21,10 @@ export async function onRequest(context) {
   }
   
   try {
-    // 解析请求体
+    // Parse request body
     const { cartId, lineIds } = await request.json();
     
-    // 参数验证
+    // Parameter validation
     if (!cartId || !lineIds || !lineIds.length) {
       return new Response(JSON.stringify({
         success: false,
@@ -35,7 +35,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 创建GraphQL查询
+    // Create GraphQL query
     const query = `
       mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
         cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
@@ -94,13 +94,13 @@ export async function onRequest(context) {
       }
     `;
     
-    // 准备变量
+    // Prepare variables
     const variables = {
       cartId,
       lineIds
     };
     
-    // 发送请求到Shopify
+    // Send request to Shopify
     const response = await fetch(
       `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
       {
@@ -118,7 +118,7 @@ export async function onRequest(context) {
     
     const responseData = await response.json();
     
-    // 检查是否有错误
+    // Check for errors
     if (responseData.errors || 
         (responseData.data && 
          responseData.data.cartLinesRemove && 
@@ -137,7 +137,7 @@ export async function onRequest(context) {
       });
     }
     
-    // 返回成功响应
+    // Return successful response
     return new Response(JSON.stringify({
       success: true,
       message: "商品已从购物车移除",

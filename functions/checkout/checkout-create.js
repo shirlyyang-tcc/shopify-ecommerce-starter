@@ -1,15 +1,15 @@
-// 创建结账流程函数
+// Create checkout process function
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // 添加CORS头
+  // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
   
   
-  // 仅处理POST请求
+  // Only handle POST requests
   if (request.method !== "POST") {
     return new Response(JSON.stringify({
       success: false,
@@ -21,27 +21,27 @@ export async function onRequest(context) {
   }
   
   try {
-    // 解析请求体
+    // Parse request body
     const { cartId } = await request.json();
     
-    // 参数验证
+    // Parameter validation
     if (!cartId) {
       return new Response(JSON.stringify({
         success: false,
-        message: "购物车ID为必填项"
+        message: "Shopping cart ID is required"
       }), {
         status: 400,
         headers
       });
     }
     
-    // 用Shopify Storefront API创建结账
-    // 如果用户已登录（有accessToken），则关联该用户
-    // 否则创建匿名结账
+    // Create checkout using Shopify Storefront API
+    // If user is logged in (has accessToken), associate with that user
+    // Otherwise create anonymous checkout
     
     let checkoutUrl;
     
-    // 检查购物车是否存在
+    // Check if cart exists
     const getCartQuery = `
       query getCart($cartId: ID!) {
         cart(id: $cartId) {
@@ -73,7 +73,7 @@ export async function onRequest(context) {
     if (cartData.errors) {
       return new Response(JSON.stringify({
         success: false,
-        message: "获取购物车信息失败：" + cartData.errors[0].message
+        message: "Failed to get shopping cart information: " + cartData.errors[0].message
       }), {
         status: 400,
         headers
@@ -83,25 +83,25 @@ export async function onRequest(context) {
     if (!cartData.data || !cartData.data.cart) {
       return new Response(JSON.stringify({
         success: false,
-        message: "找不到购物车"
+        message: "Shopping cart not found"
       }), {
         status: 404,
         headers
       });
     }
     
-    // 获取购物车的结账URL
+    // Get cart checkout URL
     checkoutUrl = cartData.data.cart.checkoutUrl;
     
-    // 如果有accessToken，可以在这里将购物车与用户关联
-    // 注意：Shopify Storefront API的购物车已经包含结账URL
-    // 所以这里不需要额外创建结账，直接使用购物车的结账URL即可
+    // If there's an accessToken, we can associate the cart with the user here
+    // Note: Shopify Storefront API's cart already includes checkout URL
+    // So we don't need to create a separate checkout, just use the cart's checkout URL
     
-    // 返回成功响应
+    // Return successful response
     return new Response(JSON.stringify({
       success: true,
       checkoutUrl,
-      message: "已创建结账流程，请继续完成支付"
+      message: "Checkout process created successfully, please complete payment"
     }), {
       status: 200,
       headers
@@ -110,7 +110,7 @@ export async function onRequest(context) {
   } catch (error) {
     return new Response(JSON.stringify({
       success: false,
-      message: "创建结账过程中出现错误",
+      message: "An error occurred while creating checkout",
       error: error.message
     }), {
       status: 500,

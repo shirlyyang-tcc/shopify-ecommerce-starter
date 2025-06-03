@@ -1,4 +1,4 @@
-// 获取单个商品分类详情 - 使用Shopify Storefront API
+// Get single collection detail - Using Shopify Storefront API
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -7,31 +7,31 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   });
 
-  // 处理GET请求
+  // Handle GET request
   if (request.method === "GET") {
     try {
       const url = new URL(request.url);
       const path = url.pathname;
       const segments = path.split('/');
-      const handle = segments[segments.length - 1]; // 获取分类的slug/handle
+      const handle = segments[segments.length - 1]; // Get collection's slug/handle
       
       if (!handle) {
         return new Response(JSON.stringify({
           success: false,
-          message: "分类ID或slug不能为空"
+          message: "Collection ID or slug cannot be empty"
         }), {
           status: 400,
           headers
         });
       }
       
-      // 获取查询参数，用于产品分页
+      // Get query parameters for product pagination
       const first = parseInt(url.searchParams.get('first') || '20', 10);
       const after = url.searchParams.get('after') || null;
       const sortKey = url.searchParams.get('sortKey') || 'BEST_SELLING';
       const reverse = url.searchParams.get('reverse') === 'true';
       
-      // 创建GraphQL查询
+      // Create GraphQL query
       const graphqlQuery = `
         query getCollectionByHandle($handle: String!, $first: Int!, $after: String, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean!) {
           collectionByHandle(handle: $handle) {
@@ -89,7 +89,7 @@ export async function onRequest(context) {
         }
       `;
       
-      // 准备变量
+      // Prepare variables
       const variables = {
         handle,
         first,
@@ -98,7 +98,7 @@ export async function onRequest(context) {
         reverse
       };
       
-      // 发送请求到Shopify
+      // Send request to Shopify
       const response = await fetch(
         `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
         {
@@ -116,22 +116,22 @@ export async function onRequest(context) {
       
       const responseData = await response.json();
       
-      // 检查是否有错误
+      // Check for errors
       if (responseData.errors) {
         return new Response(JSON.stringify({
           success: false,
-          message: "获取分类详情失败：" + responseData.errors[0].message
+          message: "Failed to get collection details: " + responseData.errors[0].message
         }), {
           status: 400,
           headers
         });
       }
       
-      // 检查分类是否存在
+      // Check if collection exists
       if (!responseData.data.collectionByHandle) {
         return new Response(JSON.stringify({
           success: false,
-          message: "未找到分类"
+          message: "Collection not found"
         }), {
           status: 404,
           headers
@@ -140,7 +140,7 @@ export async function onRequest(context) {
       
       const shopifyCollection = responseData.data.collectionByHandle;
       
-      // 处理产品数据并格式化成符合前端需要的格式
+      // Process product data and format for frontend
       const products = shopifyCollection.products.edges.map(edge => {
         const { node } = edge;
         const firstVariant = node.variants.edges[0]?.node;
@@ -162,7 +162,7 @@ export async function onRequest(context) {
         };
       });
       
-      // 构建分类对象
+      // Build collection object
       const collection = {
         id: shopifyCollection.id.split('/').pop(),
         title: shopifyCollection.title,
@@ -186,7 +186,7 @@ export async function onRequest(context) {
     } catch (error) {
       return new Response(JSON.stringify({
         success: false,
-        message: "获取分类详情过程中出现错误",
+        message: "An error occurred while getting collection details",
         error: error.message
       }), {
         status: 500,
@@ -195,7 +195,7 @@ export async function onRequest(context) {
     }
   }
   
-  // 处理不支持的请求方法
+  // Handle unsupported request methods
   return new Response(JSON.stringify({
     success: false,
     message: "Method not allowed"
