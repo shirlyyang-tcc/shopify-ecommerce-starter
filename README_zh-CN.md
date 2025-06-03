@@ -21,6 +21,9 @@
 
 ## 开始使用
 
+### Shopify 设置
+根据[文档](https://edgeone.ai/document/178987340165009408)进行设置
+
 ### 安装依赖
 
 ```bash

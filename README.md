@@ -20,6 +20,9 @@ This is a Shopify ecommerce website template built with Next.js, Shopify Storefr
 
 ## Getting Started
 
+### Shopify Setup
+Setup your headless shop according to [document](https://edgeone.ai/document/178987340165009408)
+
 ### Install Dependencies
 
 ```bash
