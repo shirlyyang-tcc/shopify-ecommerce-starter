@@ -22,7 +22,7 @@
 ## 开始使用
 
 ### Shopify 设置
-根据[文档](https://edgeone.ai/document/178987340165009408)进行设置
+根据[文档](https://edgeone.cloud.tencent.com/pages/document/179443686345789440)进行设置
 
 ### 安装依赖
 
