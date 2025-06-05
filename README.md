@@ -70,3 +70,6 @@ SHOPIFY_STORE_DOMAIN=yourshop.myshopify.com
 SHOPIFY_API_VERSION=2025-04
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=your storefront api access token
 ```
+
+## Deploy
+[![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?template=shopify-ecommerce-starter)
