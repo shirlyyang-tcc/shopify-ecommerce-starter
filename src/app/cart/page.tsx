@@ -84,7 +84,7 @@ export default function CartPage() {
             It looks like you haven&apos;t added any items to your cart yet.
           </p>
           <Link href="/">
-            <Button size="lg">Continue Shopping</Button>
+            <Button size="lg" className="cursor-pointer">Continue Shopping</Button>
           </Link>
         </div>
       ) : (
@@ -160,7 +160,7 @@ export default function CartPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center border border-gray-300 rounded-md w-28">
                           <button
-                            className="px-2 py-1 disabled:opacity-50 text-gray-700 hover:bg-gray-100"
+                            className="px-2 py-1 disabled:opacity-50 text-gray-700 hover:bg-gray-100 cursor-pointer"
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                             disabled={item.quantity <= 1 || isLoading}
                           >
@@ -173,7 +173,7 @@ export default function CartPage() {
                             readOnly
                           />
                           <button
-                            className="px-2 py-1 disabled:opacity-50 text-gray-700 hover:bg-gray-100"
+                            className="px-2 py-1 disabled:opacity-50 text-gray-700 hover:bg-gray-100 cursor-pointer"
                             onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                             disabled={isLoading}
                           >
@@ -189,7 +189,7 @@ export default function CartPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => handleRemoveItem(item.id)}
-                          className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                          className="text-red-600 hover:text-red-800 disabled:opacity-50 cursor-pointer"
                           disabled={isLoading}
                           aria-label="Remove item"
                         >
@@ -204,14 +204,14 @@ export default function CartPage() {
 
             <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
               <Link href="/">
-                <Button variant="outline">Continue Shopping</Button>
+                <Button variant="outline" className="cursor-pointer">Continue Shopping</Button>
               </Link>
               {cartItems.length > 0 && (
                 <Button 
                   variant="outline"
                   onClick={handleClearCart} 
                   disabled={isLoading}
-                  className="text-red-600 border-red-500 hover:bg-red-50 hover:text-red-700"
+                  className="text-red-600 border-red-500 hover:bg-red-50 hover:text-red-700 cursor-pointer"
                 >
                   Clear Cart
                 </Button>
@@ -240,7 +240,7 @@ export default function CartPage() {
                   <div>{formatPrice(total, currencyCode)}</div>
                 </div>
                 <Button 
-                    className="w-full mt-6 py-3 text-base"
+                    className="w-full mt-6 py-3 text-base cursor-pointer"
                     disabled={isLoading || cartItems.length === 0 || !cart?.checkoutUrl}
                 >
                   <a href={cart?.checkoutUrl} target="_blank" rel="noopener noreferrer">
