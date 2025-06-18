@@ -46,7 +46,7 @@ export default function ProductListClient({ initialProducts }: ProductListClient
             </CardContent>
             <CardFooter className="p-4 bg-gray-50">
               <Link href={`/product/${product.slug}`} passHref>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer">
                   View Details <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>

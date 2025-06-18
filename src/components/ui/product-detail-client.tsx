@@ -236,7 +236,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <div className="flex items-center space-x-4">
           <div className="flex items-center border rounded-md">
             <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="rounded-r-none"
+              className="rounded-r-none cursor-pointer"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -248,7 +248,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               min="1"
             />
             <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}
-              className="rounded-l-none"
+              className="rounded-l-none cursor-pointer"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -257,7 +257,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             size="lg" 
             onClick={handleAddToCart} 
             disabled={isCartLoading || !currentVariant?.availableForSale}
-            className="flex-1"
+            className="flex-1 cursor-pointer"
           >
             {isCartLoading ? "Adding..." : (currentVariant?.availableForSale ? "Add to cart" : (currentVariant ? "Sold out" : "Select variant"))}
           </Button>

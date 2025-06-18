@@ -34,13 +34,13 @@ const Navbar = () => {
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <Link href="/account" title="My Account">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="cursor-pointer">
                 <User className="h-5 w-5" />
                 <span className="sr-only">My Account</span>
               </Button>
             </Link>
             <Link href="/cart" title="Shopping Cart">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="cursor-pointer">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="sr-only">Shopping Cart</span>
               </Button>
@@ -114,20 +114,6 @@ const Navbar = () => {
             className="border-transparent text-gray-900 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
           >
             All Products
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setIsMenuOpen(false)}
-            className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-          >
-            Contact Us
-          </Link>
-          <Link
-            href="/blog"
-            onClick={() => setIsMenuOpen(false)}
-            className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-          >
-            Blog
           </Link>
         </div>
         <div className="pt-4 pb-3 border-t border-gray-200">

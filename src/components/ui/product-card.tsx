@@ -50,7 +50,7 @@ const ProductCard = ({ title, price, image, slug, variantId }: ProductCardProps)
         </p>
         <Button 
           onClick={addToCart}
-          className="w-full"
+          className="w-full cursor-pointer"
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart

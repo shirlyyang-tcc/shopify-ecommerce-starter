@@ -55,7 +55,7 @@ export default async function Home() {
               Explore our carefully selected high-quality crystal series, providing infinite energy for your life journey
             </p>
             <Link href="/product/list">
-              <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100">
+              <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100 cursor-pointer">
                 Shop Now
               </Button>
             </Link>
@@ -76,7 +76,7 @@ export default async function Home() {
           {!error && featuredProducts.length > 0 && <ProductGrid products={featuredProducts} />}
           <div className="text-center mt-12">
             <Link href="/product/list">
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" className="cursor-pointer">
                 View All Products
               </Button>
             </Link>
@@ -129,7 +129,7 @@ export default async function Home() {
           <h2 className="text-3xl font-bold mb-4">Limited-Time Offer</h2>
           <p className="text-xl mb-8">New customers get 50 off their first order over 500</p>
           <Link href="/product/list">
-            <Button className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 cursor-pointer">
               Shop Now
             </Button>
           </Link>
