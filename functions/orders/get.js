@@ -128,7 +128,7 @@ export async function onRequest(context) {
             headers
         });
     }
-
+    // console.log('responseData', responseData);
     return new Response(JSON.stringify({
       success: true,
       orders: responseData.data.customer.orders.edges.map(edge => edge.node)

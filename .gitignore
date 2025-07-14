@@ -46,3 +46,10 @@ next-env.d.ts
 
 # Local Env files
 .env*.local
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+!.edgeone/project.json
+.tef_dist/*
+  
