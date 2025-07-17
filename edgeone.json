@@ -1,0 +1,7 @@
+{
+  "name": "shopify-ecommerce-starter",
+  "buildCommand": "npx next build",
+  "installCommand": "npm install",
+  "outputDirectory": "./out",
+  "nodeVersion": "22.11.0"
+}
