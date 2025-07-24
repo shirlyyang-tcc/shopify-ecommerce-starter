@@ -80,11 +80,6 @@ export async function onRequest(context) {
     'Content-Type': 'application/json' 
   });
 
-  if (env.NEXT_PUBLIC_DEV === "true" || env.DEV === "true") {
-    headers.append('Access-Control-Allow-Origin', env.FRONT_END_URL_DEV || '*');
-    headers.append('Access-Control-Allow-Methods', 'POST, OPTIONS'); // Logout is a state change, POST is appropriate
-    headers.append('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  }
 
   if (request.method === "OPTIONS") {
     return new Response(null, { headers, status: 204 });

@@ -13,9 +13,7 @@ import Image from 'next/image';
 import { PackageSearch, ShoppingBag, MapPin, LogOut, CreditCard, Edit3 } from 'lucide-react';
 import { Order } from '@/interfaces/order';
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_DEV === 'true' 
-    ? process.env.NEXT_PUBLIC_API_URL_DEV 
-    : (process.env.NEXT_PUBLIC_API_URL || '');
+const apiBaseUrl = '';
 
 export default function AccountPage() {
   const router = useRouter();
