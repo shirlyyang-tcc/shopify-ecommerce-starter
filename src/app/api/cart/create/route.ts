@@ -1,43 +1,20 @@
-// Add item to cart function
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  
+// Create cart API route
+export async function POST(request: NextRequest) {
   // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  // Only handle POST requests
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
-  
   try {
     // Parse request body
-    const { cartId, variantId, quantity } = await request.json();
-    
-    // Parameter validation
-    if (!cartId || !variantId || !quantity) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: "购物车ID、商品变体ID和数量为必填项"
-      }), {
-        status: 400,
-        headers
-      });
-    }
+    const { customerAccessToken } = await request.json();
     
     // Create GraphQL query
     const query = `
-      mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
-        cartLinesAdd(cartId: $cartId, lines: $lines) {
+      mutation cartCreate($input: CartInput!) {
+        cartCreate(input: $input) {
           cart {
             id
             checkoutUrl
@@ -95,23 +72,21 @@ export async function onRequest(context) {
     
     // Prepare variables
     const variables = {
-      cartId,
-      lines: [
-        {
-          merchandiseId: variantId,
-          quantity: parseInt(quantity, 10)
+      input: customerAccessToken ? {
+        buyerIdentity: {
+          customerAccessToken: customerAccessToken
         }
-      ]
+      } : {}
     };
     
     // Send request to Shopify
     const response = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({
           query,
@@ -125,40 +100,40 @@ export async function onRequest(context) {
     // Check for errors
     if (responseData.errors || 
         (responseData.data && 
-         responseData.data.cartLinesAdd && 
-         responseData.data.cartLinesAdd.userErrors.length > 0)) {
+         responseData.data.cartCreate && 
+         responseData.data.cartCreate.userErrors.length > 0)) {
       
       const errorMessage = responseData.errors ? 
         responseData.errors[0].message : 
-        responseData.data.cartLinesAdd.userErrors[0].message;
+        responseData.data.cartCreate.userErrors[0].message;
       
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
-        message: "添加商品到购物车失败：" + errorMessage
-      }), {
+        message: "创建购物车失败：" + errorMessage
+      }, {
         status: 400,
         headers
       });
     }
     
     // Return successful response
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
-      message: "商品已添加到购物车",
-      cart: responseData.data.cartLinesAdd.cart
-    }), {
+      message: "购物车创建成功",
+      cart: responseData.data.cartCreate.cart
+    }, {
       status: 200,
       headers
     });
     
-  } catch (error) {
-    return new Response(JSON.stringify({
+  } catch (error: any) {
+    return NextResponse.json({
       success: false,
-      message: "添加商品到购物车过程中出现错误",
+      message: "创建购物车过程中出现错误",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

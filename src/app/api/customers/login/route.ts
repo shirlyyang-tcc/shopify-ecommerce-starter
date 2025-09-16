@@ -1,9 +1,9 @@
-// functions/customers/login.js
+import { NextRequest, NextResponse } from 'next/server';
 
-async function getShopifyCustomerAccessToken(email, password, env) {
-  const storefrontAccessToken = env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-  const shopifyDomain = env.SHOPIFY_STORE_DOMAIN;
-  const apiVersion = env.SHOPIFY_API_VERSION || '2024-04'; // Default to a recent version
+async function getShopifyCustomerAccessToken(email: string, password: string) {
+  const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  const shopifyDomain = process.env.SHOPIFY_STORE_DOMAIN;
+  const apiVersion = process.env.SHOPIFY_API_VERSION || '2024-04'; // Default to a recent version
 
   if (!storefrontAccessToken || !shopifyDomain) {
     console.error("Shopify environment variables for customer auth are not set.");
@@ -75,71 +75,62 @@ async function getShopifyCustomerAccessToken(email, password, env) {
     console.error("Unexpected response structure from Shopify customerAccessTokenCreate:", jsonResponse);
     return { success: false, message: "Failed to login. Unexpected response from Shopify.", status: 500 };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getShopifyCustomerAccessToken:", error);
     return { success: false, message: error.message || "An unexpected error occurred during login.", status: 500 };
   }
 }
 
-export async function onRequest(context) {
-  const { request, env } = context;
-
+// Customer login API route
+export async function POST(request: NextRequest) {
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-
   if (request.method === "OPTIONS") {
     return new Response(null, { headers, status: 204 });
-  }
-
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ success: false, message: "Method not allowed. Please use POST." }), {
-      status: 405,
-      headers
-    });
   }
 
   try {
     const { email, password } = await request.json();
 
     if (!email || !password) {
-      return new Response(JSON.stringify({ success: false, message: "Email and password are required." }), {
+      return NextResponse.json({ success: false, message: "Email and password are required." }, {
         status: 400,
         headers
       });
     }
 
-    const loginResult = await getShopifyCustomerAccessToken(email, password, env);
+    const loginResult = await getShopifyCustomerAccessToken(email, password);
 
     if (!loginResult.success) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: loginResult.message,
         errors: loginResult.errors,
-      }), {
+      }, {
         status: loginResult.status || 401, // Default to 401 for login failures
         headers
       });
     }
 
     // Login successful, return token and expiry
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
       message: "Login successful.",
       customerAccessToken: loginResult.token,
       expiresAt: loginResult.expiresAt,
       // Optionally, you could fetch basic customer info here too, but it's better to do it in a separate /account call
-    }), {
+    }, {
       status: 200,
       headers
     });
 
-  } catch (error) {
-    console.error("[functions/customers/login.js] Error processing request:", error);
-    return new Response(JSON.stringify({ success: false, message: "An error occurred processing your request." }), {
+  } catch (error: any) {
+    console.error("[api/customers/login] Error processing request:", error);
+    return NextResponse.json({ success: false, message: "An error occurred processing your request." }, {
       status: 500,
       headers
     });
   }
-} 
+}

@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true); // Start with loading true to check initial session
   const [error, setError] = useState<string | null>(null);
 
-  const apiBaseUrl = ''; 
+  const apiBaseUrl = '/api'; 
 
   // Helper to clear session data
   const clearSession = () => {

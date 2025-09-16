@@ -1,36 +1,23 @@
-// Get cart information function
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  
+// Get cart API route
+export async function GET(request: NextRequest) {
   // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  
-  // Only handle GET requests
-  if (request.method !== "GET") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
-  
   try {
-    // Get cart ID from URL
-    const url = new URL(request.url);
-    const cartId = url.searchParams.get('cartId');
+    // Get cartId from query parameters
+    const { searchParams } = new URL(request.url);
+    const cartId = searchParams.get('cartId');
     
     // Parameter validation
     if (!cartId) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "购物车ID为必填项"
-      }), {
+      }, {
         status: 400,
         headers
       });
@@ -90,18 +77,16 @@ export async function onRequest(context) {
     `;
     
     // Prepare variables
-    const variables = {
-      cartId
-    };
+    const variables = { cartId };
     
     // Send request to Shopify
     const response = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({
           query,
@@ -114,10 +99,10 @@ export async function onRequest(context) {
     
     // Check for errors
     if (responseData.errors) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "获取购物车信息失败：" + responseData.errors[0].message
-      }), {
+      }, {
         status: 400,
         headers
       });
@@ -125,32 +110,34 @@ export async function onRequest(context) {
     
     // Check if cart exists
     if (!responseData.data || !responseData.data.cart) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
-        message: "找不到购物车"
-      }), {
+        message: "购物车未找到",
+        cart: null
+      }, {
         status: 404,
         headers
       });
     }
     
     // Return successful response
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
+      message: "购物车信息获取成功",
       cart: responseData.data.cart
-    }), {
+    }, {
       status: 200,
       headers
     });
     
-  } catch (error) {
-    return new Response(JSON.stringify({
+  } catch (error: any) {
+    return NextResponse.json({
       success: false,
       message: "获取购物车信息过程中出现错误",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

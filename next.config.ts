@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  images: { unoptimized: true },
-  skipTrailingSlashRedirect:true
+  skipTrailingSlashRedirect:true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com'
+      }
+    ]
+  }
 };
 
 export default nextConfig;

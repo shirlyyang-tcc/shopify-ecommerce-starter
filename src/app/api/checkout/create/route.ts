@@ -1,24 +1,11 @@
-// Create checkout process function
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  
+// Create checkout process API route
+export async function POST(request: NextRequest) {
   // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
-  
-  
-  // Only handle POST requests
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
   
   try {
     // Parse request body
@@ -26,10 +13,10 @@ export async function onRequest(context) {
     
     // Parameter validation
     if (!cartId) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "Shopping cart ID is required"
-      }), {
+      }, {
         status: 400,
         headers
       });
@@ -54,12 +41,12 @@ export async function onRequest(context) {
     const getCartVars = { cartId };
     
     const cartResponse = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({
           query: getCartQuery,
@@ -71,20 +58,20 @@ export async function onRequest(context) {
     const cartData = await cartResponse.json();
     
     if (cartData.errors) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "Failed to get shopping cart information: " + cartData.errors[0].message
-      }), {
+      }, {
         status: 400,
         headers
       });
     }
     
     if (!cartData.data || !cartData.data.cart) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "Shopping cart not found"
-      }), {
+      }, {
         status: 404,
         headers
       });
@@ -98,23 +85,23 @@ export async function onRequest(context) {
     // So we don't need to create a separate checkout, just use the cart's checkout URL
     
     // Return successful response
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
       checkoutUrl,
       message: "Checkout process created successfully, please complete payment"
-    }), {
+    }, {
       status: 200,
       headers
     });
     
-  } catch (error) {
-    return new Response(JSON.stringify({
+  } catch (error: any) {
+    return NextResponse.json({
       success: false,
       message: "An error occurred while creating checkout",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

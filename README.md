@@ -31,22 +31,8 @@ npm install
 
 ### Run Development Server
 
-Frontend development server:
-
 ```bash
-npm run dev
-```
-
-EdgeOne function development server:
-
-```bash
-npm run edge:dev
-```
-
-### Build Application
-
-```bash
-npm run build
+edgeone pages dev
 ```
 
 ## Project Structure
@@ -54,22 +40,16 @@ npm run build
 - `/src/app` - Next.js pages and components
 - `/src/components` - Reusable UI components
 - `/src/lib` - Utility functions and configurations
-- `/functions` - EdgeOne functions
 - `/public` - Static resources
+
+## Payment
+The project integrates Shopify's payment functionality (beta). To test the payment process, after clicking the checkout button, you need to enter the password: ohfrad.
+
+For test card numbers, refer to the documentation: https://help.shopify.com/en/manual/payments/shopify-payments/testing-shopify-payments
 
 ## Environment Variables
 
 Create a `.env` file containing the following variables:
-
-```
-DEV=true
-FRONT_END_URL_DEV=http://localhost:3000
-NEXT_PUBLIC_API_URL_DEV=http://localhost:8088/
-
-SHOPIFY_STORE_DOMAIN=yourshop.myshopify.com
-SHOPIFY_API_VERSION=2025-04
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=your storefront api access token
-```
 
 ## Deploy
 [![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?template=shopify-ecommerce-starter)

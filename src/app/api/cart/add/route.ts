@@ -1,35 +1,22 @@
-// Remove item from cart function
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  
+// Add item to cart API route
+export async function POST(request: NextRequest) {
   // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  
-  // Only handle POST requests
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
-  
   try {
     // Parse request body
-    const { cartId, lineIds } = await request.json();
+    const { cartId, variantId, quantity } = await request.json();
     
     // Parameter validation
-    if (!cartId || !lineIds || !lineIds.length) {
-      return new Response(JSON.stringify({
+    if (!cartId || !variantId || !quantity) {
+      return NextResponse.json({
         success: false,
-        message: "购物车ID和要移除的商品行ID为必填项"
-      }), {
+        message: "购物车ID、商品变体ID和数量为必填项"
+      }, {
         status: 400,
         headers
       });
@@ -37,8 +24,8 @@ export async function onRequest(context) {
     
     // Create GraphQL query
     const query = `
-      mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
-        cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+        cartLinesAdd(cartId: $cartId, lines: $lines) {
           cart {
             id
             checkoutUrl
@@ -97,17 +84,22 @@ export async function onRequest(context) {
     // Prepare variables
     const variables = {
       cartId,
-      lineIds
+      lines: [
+        {
+          merchandiseId: variantId,
+          quantity: parseInt(quantity, 10)
+        }
+      ]
     };
     
     // Send request to Shopify
     const response = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({
           query,
@@ -121,40 +113,40 @@ export async function onRequest(context) {
     // Check for errors
     if (responseData.errors || 
         (responseData.data && 
-         responseData.data.cartLinesRemove && 
-         responseData.data.cartLinesRemove.userErrors.length > 0)) {
+         responseData.data.cartLinesAdd && 
+         responseData.data.cartLinesAdd.userErrors.length > 0)) {
       
       const errorMessage = responseData.errors ? 
         responseData.errors[0].message : 
-        responseData.data.cartLinesRemove.userErrors[0].message;
+        responseData.data.cartLinesAdd.userErrors[0].message;
       
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
-        message: "从购物车移除商品失败：" + errorMessage
-      }), {
+        message: "添加商品到购物车失败：" + errorMessage
+      }, {
         status: 400,
         headers
       });
     }
     
     // Return successful response
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
-      message: "商品已从购物车移除",
-      cart: responseData.data.cartLinesRemove.cart
-    }), {
+      message: "商品已添加到购物车",
+      cart: responseData.data.cartLinesAdd.cart
+    }, {
       status: 200,
       headers
     });
     
-  } catch (error) {
-    return new Response(JSON.stringify({
+  } catch (error: any) {
+    return NextResponse.json({
       success: false,
-      message: "从购物车移除商品过程中出现错误",
+      message: "添加商品到购物车过程中出现错误",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

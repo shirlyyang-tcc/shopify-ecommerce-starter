@@ -1,12 +1,12 @@
-// functions/customers/register.js
+import { NextRequest, NextResponse } from 'next/server';
 
-async function createShopifyCustomer(firstName, lastName, email, password, env) {
-  const storefrontAccessToken = env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-  const shopifyDomain = env.SHOPIFY_STORE_DOMAIN;
-  const apiVersion = env.SHOPIFY_API_VERSION || '2024-04';
+async function createShopifyCustomer(input: { email: string; password: string; firstName?: string; lastName?: string }) {
+  const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  const shopifyDomain = process.env.SHOPIFY_STORE_DOMAIN;
+  const apiVersion = process.env.SHOPIFY_API_VERSION || '2024-04';
 
   if (!storefrontAccessToken || !shopifyDomain) {
-    console.error("Shopify environment variables for customer creation are not set.");
+    console.error("Shopify environment variables for customer registration are not set.");
     return { success: false, message: "Shopify API credentials not configured.", status: 500 };
   }
 
@@ -17,9 +17,10 @@ async function createShopifyCustomer(firstName, lastName, email, password, env) 
       customerCreate(input: $input) {
         customer {
           id
+          email
           firstName
           lastName
-          email
+          displayName
         }
         customerUserErrors {
           code
@@ -32,10 +33,10 @@ async function createShopifyCustomer(firstName, lastName, email, password, env) 
 
   const variables = {
     input: {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
+      email: input.email,
+      password: input.password,
+      firstName: input.firstName || '',
+      lastName: input.lastName || '',
     },
   };
 
@@ -59,7 +60,7 @@ async function createShopifyCustomer(firstName, lastName, email, password, env) 
         success: false, 
         message: errorMessage, 
         errors: shopifyErrors, 
-        status: response.status === 200 ? 400 : response.status // if Shopify returns 200 with user errors, it's a validation failure
+        status: response.status === 200 ? 400 : response.status
       };
     }
     
@@ -68,82 +69,78 @@ async function createShopifyCustomer(firstName, lastName, email, password, env) 
 
     if (userErrors && userErrors.length > 0) {
       console.warn("Shopify customer user errors during registration:", userErrors);
-      // It's possible to have both customer data and errors if some fields are ok but others fail (e.g. password too short)
-      // However, Shopify usually returns customer as null if there are userErrors.
       return { success: false, message: userErrors[0].message, errors: userErrors, status: 400 };
     }
 
-    if (customerData && customerData.id) {
+    if (customerData) {
       return { success: true, customer: customerData };
     }
 
+    // Fallback error if structure is unexpected
     console.error("Unexpected response structure from Shopify customerCreate:", jsonResponse);
-    return { success: false, message: "Failed to register. Unexpected response from Shopify.", status: 500 };
+    return { success: false, message: "Failed to create customer account. Unexpected response from Shopify.", status: 500 };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in createShopifyCustomer:", error);
     return { success: false, message: error.message || "An unexpected error occurred during registration.", status: 500 };
   }
 }
 
-export async function onRequest(context) {
-  const { request, env } = context;
-
+// Customer registration API route
+export async function POST(request: NextRequest) {
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ success: false, message: "Method not allowed. Please use POST." }), {
-      status: 405,
-      headers
-    });
-  }
-
   try {
-    const { firstName, lastName, email, password } = await request.json();
+    const { email, password, firstName, lastName } = await request.json();
 
-    if (!firstName || !email || !password) {
-      return new Response(JSON.stringify({ success: false, message: "First name, email, and password are required." }), {
+    if (!email || !password) {
+      return NextResponse.json({ 
+        success: false, 
+        message: "Email and password are required." 
+      }, {
         status: 400,
         headers
       });
     }
-    // Basic password validation (example)
-    if (password.length < 5) {
-        return new Response(JSON.stringify({ success: false, message: "Password must be at least 5 characters long." }), {
-            status: 400,
-            headers
-        });
-    }
 
-    const registrationResult = await createShopifyCustomer(firstName, lastName, email, password, env);
+    const registrationResult = await createShopifyCustomer({
+      email,
+      password,
+      firstName,
+      lastName
+    });
 
     if (!registrationResult.success) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: registrationResult.message,
         errors: registrationResult.errors,
-      }), {
-        status: registrationResult.status || 400, // Default to 400 for registration input errors
+      }, {
+        status: registrationResult.status || 400,
         headers
       });
     }
 
-    return new Response(JSON.stringify({
+    // Registration successful
+    return NextResponse.json({
       success: true,
-      message: "Account created successfully. Please login.",
+      message: "Account created successfully. You can now log in.",
       customer: registrationResult.customer,
-    }), {
-      status: 201, // 201 Created
+    }, {
+      status: 201,
       headers
     });
 
-  } catch (error) {
-    console.error("[functions/customers/register.js] Error processing request:", error);
-    return new Response(JSON.stringify({ success: false, message: "An error occurred processing your registration." }), {
+  } catch (error: any) {
+    console.error("[api/customers/register] Error processing request:", error);
+    return NextResponse.json({ 
+      success: false, 
+      message: "An error occurred processing your request." 
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

@@ -65,7 +65,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const SHOPIFY_CART_ID_LS_KEY = 'shopifyCartId';
-const apiBaseUrl = '');
+const apiBaseUrl = '/api';
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<Cart | null>(null);

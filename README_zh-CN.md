@@ -32,41 +32,28 @@ npm install
 
 ### 运行开发服务器
 
-前端开发服务器:
-
 ```bash
-npm run dev
+edgeone pages dev
 ```
 
-EdgeOne函数开发服务器:
-
-```bash
-npm run edge:dev
-```
-
-### 构建应用
-
-```bash
-npm run build
-```
 
 ## 项目结构
 
 - `/src/app` - Next.js 页面和组件
 - `/src/components` - 可重用UI组件
 - `/src/lib` - 工具函数和配置
-- `/functions` - EdgeOne 函数
 - `/public` - 静态资源
+
+## 支付
+项目接入了 shopify 提供的支付功能（测试版），如果需要测试支付效果，在点击结账按钮后需要输入密码：ohfrad
+
+测试卡号参考文档：https://help.shopify.com/en/manual/payments/shopify-payments/testing-shopify-payments
 
 ## 环境变量
 
 创建一个 `.env` 文件，包含以下变量:
 
 ```
-DEV=true
-FRONT_END_URL_DEV=http://localhost:3000
-NEXT_PUBLIC_API_URL_DEV=http://localhost:8088/
-
 SHOPIFY_STORE_DOMAIN=yourshop.myshopify.com
 SHOPIFY_API_VERSION=2025-04
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=your storefront api access token

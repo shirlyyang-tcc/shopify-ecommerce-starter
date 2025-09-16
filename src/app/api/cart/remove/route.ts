@@ -1,35 +1,22 @@
-// Update cart item quantity function
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function onRequest(context) {
-  const { request, env } = context;
-  
+// Remove item from cart API route
+export async function POST(request: NextRequest) {
   // Add CORS headers
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
-  
 
-  // Only handle POST requests
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
-  
   try {
     // Parse request body
-    const { cartId, lineId, quantity } = await request.json();
+    const { cartId, lineIds } = await request.json();
     
     // Parameter validation
-    if (!cartId || !lineId || quantity === undefined) {
-      return new Response(JSON.stringify({
+    if (!cartId || !lineIds || !Array.isArray(lineIds) || lineIds.length === 0) {
+      return NextResponse.json({
         success: false,
-        message: "购物车ID、商品行ID和数量为必填项"
-      }), {
+        message: "购物车ID和商品行ID为必填项"
+      }, {
         status: 400,
         headers
       });
@@ -37,8 +24,8 @@ export async function onRequest(context) {
     
     // Create GraphQL query
     const query = `
-      mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
-        cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+        cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
           cart {
             id
             checkoutUrl
@@ -97,22 +84,17 @@ export async function onRequest(context) {
     // Prepare variables
     const variables = {
       cartId,
-      lines: [
-        {
-          id: lineId,
-          quantity: parseInt(quantity, 10)
-        }
-      ]
+      lineIds
     };
     
     // Send request to Shopify
     const response = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({
           query,
@@ -126,40 +108,40 @@ export async function onRequest(context) {
     // Check for errors
     if (responseData.errors || 
         (responseData.data && 
-         responseData.data.cartLinesUpdate && 
-         responseData.data.cartLinesUpdate.userErrors.length > 0)) {
+         responseData.data.cartLinesRemove && 
+         responseData.data.cartLinesRemove.userErrors.length > 0)) {
       
       const errorMessage = responseData.errors ? 
         responseData.errors[0].message : 
-        responseData.data.cartLinesUpdate.userErrors[0].message;
+        responseData.data.cartLinesRemove.userErrors[0].message;
       
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
-        message: "更新购物车失败：" + errorMessage
-      }), {
+        message: "从购物车移除商品失败：" + errorMessage
+      }, {
         status: 400,
         headers
       });
     }
     
     // Return successful response
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
-      message: "购物车已更新",
-      cart: responseData.data.cartLinesUpdate.cart
-    }), {
+      message: "商品已从购物车移除",
+      cart: responseData.data.cartLinesRemove.cart
+    }, {
       status: 200,
       headers
     });
     
-  } catch (error) {
-    return new Response(JSON.stringify({
+  } catch (error: any) {
+    return NextResponse.json({
       success: false,
-      message: "更新购物车过程中出现错误",
+      message: "从购物车移除商品过程中出现错误",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

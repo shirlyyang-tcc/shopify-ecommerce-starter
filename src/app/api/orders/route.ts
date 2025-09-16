@@ -1,28 +1,19 @@
-export async function onRequest(context) {
-  const { request, env } = context;
+import { NextRequest, NextResponse } from 'next/server';
 
+// Get customer orders API route
+export async function POST(request: NextRequest) {
   const headers = new Headers({
     'Content-Type': 'application/json',
   });
-
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({
-      success: false,
-      message: "Method not allowed"
-    }), {
-      status: 405,
-      headers
-    });
-  }
 
   try {
     const { customerAccessToken } = await request.json();
 
     if (!customerAccessToken) {
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "Customer access token is required"
-      }), {
+      }, {
         status: 401, // Unauthorized
         headers
       });
@@ -80,12 +71,12 @@ export async function onRequest(context) {
     };
 
     const shopifyResponse = await fetch(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
+      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
         },
         body: JSON.stringify({ query, variables })
       }
@@ -102,11 +93,11 @@ export async function onRequest(context) {
           primaryError.message.toLowerCase().includes("customer not found")) {
         statusCode = 401; // Unauthorized or Not Found for customer
       }
-      return new Response(JSON.stringify({
+      return NextResponse.json({
         success: false,
         message: "Failed to fetch orders: " + primaryError.message,
         errors: responseData.errors
-      }), {
+      }, {
         status: statusCode,
         headers
       });
@@ -119,33 +110,33 @@ export async function onRequest(context) {
         // The GraphQL query for orders on a customer with no orders should return an empty edges array, not a null customer.
         // If customer is null, it usually means the access token was invalid or expired.
         console.log("Customer data not found in Shopify response, possibly invalid token or no orders for this token.");
-        return new Response(JSON.stringify({
+        return NextResponse.json({
             success: true, // Still a success in terms of API call, but no data
             message: "No customer data found. The access token might be invalid or the customer has no orders.",
             orders: [] // Return empty orders array
-        }), {
+        }, {
             status: 200, // Or 404 if you are sure customer should exist but has no data due to token
             headers
         });
     }
 
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: true,
-      orders: responseData.data.customer.orders.edges.map(edge => edge.node)
-    }), {
+      orders: responseData.data.customer.orders.edges.map((edge: any) => edge.node)
+    }, {
       status: 200,
       headers
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching orders:", error);
-    return new Response(JSON.stringify({
+    return NextResponse.json({
       success: false,
       message: "An internal error occurred while fetching orders.",
       error: error.message
-    }), {
+    }, {
       status: 500,
       headers
     });
   }
-} 
+}

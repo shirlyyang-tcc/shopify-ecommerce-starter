@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { PackageSearch, ShoppingBag, MapPin, LogOut, CreditCard, Edit3 } from 'lucide-react';
 import { Order } from '@/interfaces/order';
 
-const apiBaseUrl = '';
+const apiBaseUrl = '/api';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function AccountPage() {
       setIsLoadingOrders(true);
       setErrorLoadingOrders(null);
       try {
-        const response = await fetch(`${apiBaseUrl}/orders/get`, {
+        const response = await fetch(`${apiBaseUrl}/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
