@@ -1,4 +1,4 @@
-import { getProducts } from '@/lib/shopify';
+import { ProductService } from '@/lib/shopify';
 import { Product } from '@/interfaces/product';
 import ProductDetailClient from "@/components/ui/product-detail-client";
 import { Metadata } from 'next';
@@ -10,7 +10,7 @@ interface Props {
 
 // This function tells Next.js which product pages to pre-render at build time
 export async function generateStaticParams() {
-  const products = await getProducts();
+  const products = await ProductService.getProducts();
   
   return products.map((product: Product) => ({
     slug: product.slug,
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
 
 // Generate page metadata
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const products = await getProducts();
+  const products = await ProductService.getProducts();
   const {slug} = await params;
   const product = products.find((p: Product) => p.slug === slug);
 
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Page component
 export default async function ProductPage({ params }: Props) {
-  const products = await getProducts();
+  const products = await ProductService.getProducts();
   const {slug} = await params;
 
   const product = products.find((p: Product) => p.slug === slug);

@@ -2,7 +2,7 @@ import ProductGrid from "@/components/ui/product-grid";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Product } from "@/interfaces/product";
-import { getProducts } from '@/lib/shopify';
+import { ProductService } from '@/lib/shopify';
 import type { ProductCardProps } from "@/components/ui/product-card";
 
 // Convert Product to ProductCardProps
@@ -20,7 +20,7 @@ function convertToProductCardProps(product: Product): ProductCardProps {
 // Get featured products
 async function getFeaturedProducts(): Promise<{ products: ProductCardProps[], error?: string }> {
   try {
-    const allProducts = await getProducts();
+    const allProducts = await ProductService.getProducts();
     // Get first 4 products as featured products and convert to ProductCardProps
     const featuredProducts = allProducts.slice(0, 4).map(convertToProductCardProps);
     return { products: featuredProducts };

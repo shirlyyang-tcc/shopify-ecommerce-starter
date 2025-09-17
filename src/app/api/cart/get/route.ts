@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { CartService } from '@/lib/shopify';
 
 // Get cart API route
 export async function GET(request: NextRequest) {
@@ -16,92 +17,21 @@ export async function GET(request: NextRequest) {
     if (!cartId) {
       return NextResponse.json({
         success: false,
-        message: "购物车ID为必填项"
+        message: "Cart ID is required"
       }, {
         status: 400,
         headers
       });
     }
     
-    // Create GraphQL query
-    const query = `
-      query getCart($cartId: ID!) {
-        cart(id: $cartId) {
-          id
-          checkoutUrl
-          createdAt
-          updatedAt
-          lines(first: 100) {
-            edges {
-              node {
-                id
-                quantity
-                merchandise {
-                  ... on ProductVariant {
-                    id
-                    title
-                    image {
-                      url
-                      altText
-                    }
-                    priceV2 {
-                      amount
-                      currencyCode
-                    }
-                    product {
-                      title
-                      handle
-                    }
-                  }
-                }
-              }
-            }
-          }
-          cost {
-            totalAmount {
-              amount
-              currencyCode
-            }
-            subtotalAmount {
-              amount
-              currencyCode
-            }
-            totalTaxAmount {
-              amount
-              currencyCode
-            }
-          }
-          totalQuantity
-        }
-      }
-    `;
+    // Get cart information using the encapsulated service
+    const result = await CartService.getCart(cartId);
     
-    // Prepare variables
-    const variables = { cartId };
-    
-    // Send request to Shopify
-    const response = await fetch(
-      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
-        },
-        body: JSON.stringify({
-          query,
-          variables
-        })
-      }
-    );
-    
-    const responseData = await response.json();
-    
-    // Check for errors
-    if (responseData.errors) {
+    if (!result.success) {
       return NextResponse.json({
         success: false,
-        message: "获取购物车信息失败：" + responseData.errors[0].message
+        message: "Failed to get cart information: " + result.message,
+        errors: result.errors
       }, {
         status: 400,
         headers
@@ -109,10 +39,10 @@ export async function GET(request: NextRequest) {
     }
     
     // Check if cart exists
-    if (!responseData.data || !responseData.data.cart) {
+    if (!result.data?.cart) {
       return NextResponse.json({
         success: false,
-        message: "购物车未找到",
+        message: "Cart not found",
         cart: null
       }, {
         status: 404,
@@ -123,8 +53,8 @@ export async function GET(request: NextRequest) {
     // Return successful response
     return NextResponse.json({
       success: true,
-      message: "购物车信息获取成功",
-      cart: responseData.data.cart
+      message: "Cart information retrieved successfully",
+      cart: result.data.cart
     }, {
       status: 200,
       headers
@@ -133,7 +63,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json({
       success: false,
-      message: "获取购物车信息过程中出现错误",
+      message: "An error occurred while retrieving cart information",
       error: error.message
     }, {
       status: 500,

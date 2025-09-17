@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { CollectionService } from '@/lib/shopify';
 
 // Get single collection detail API route
 export async function GET(
@@ -29,96 +30,19 @@ export async function GET(
     const sortKey = searchParams.get('sortKey') || 'BEST_SELLING';
     const reverse = searchParams.get('reverse') === 'true';
     
-    // Create GraphQL query
-    const graphqlQuery = `
-      query getCollectionByHandle($handle: String!, $first: Int!, $after: String, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean!) {
-        collectionByHandle(handle: $handle) {
-          id
-          title
-          handle
-          description
-          descriptionHtml
-          image {
-            url
-            altText
-            width
-            height
-          }
-          updatedAt
-          products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
-            pageInfo {
-              hasNextPage
-              hasPreviousPage
-              startCursor
-              endCursor
-            }
-            edges {
-              cursor
-              node {
-                id
-                title
-                handle
-                description
-                vendor
-                featuredImage {
-                  url
-                  altText
-                }
-                variants(first: 1) {
-                  edges {
-                    node {
-                      id
-                      title
-                      priceV2 {
-                        amount
-                        currencyCode
-                      }
-                      availableForSale
-                      quantityAvailable
-                    }
-                  }
-                }
-                productType
-                tags
-              }
-            }
-          }
-        }
-      }
-    `;
-    
-    // Prepare variables
-    const variables = {
-      handle,
+    // 使用封装的服务获取商品集合详情
+    const result = await CollectionService.getCollectionByHandle(handle, {
       first,
       after,
       sortKey,
       reverse
-    };
+    });
     
-    // Send request to Shopify
-    const response = await fetch(
-      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
-        },
-        body: JSON.stringify({
-          query: graphqlQuery,
-          variables
-        })
-      }
-    );
-    
-    const responseData = await response.json();
-    
-    // Check for errors
-    if (responseData.errors) {
+    if (!result.success) {
       return NextResponse.json({
         success: false,
-        message: "Failed to get collection details: " + responseData.errors[0].message
+        message: "Failed to get collection details: " + result.message,
+        errors: result.errors
       }, {
         status: 400,
         headers
@@ -126,7 +50,7 @@ export async function GET(
     }
     
     // Check if collection exists
-    if (!responseData.data.collectionByHandle) {
+    if (!result.data?.collectionByHandle) {
       return NextResponse.json({
         success: false,
         message: "Collection not found"
@@ -136,7 +60,7 @@ export async function GET(
       });
     }
     
-    const shopifyCollection = responseData.data.collectionByHandle;
+    const shopifyCollection = result.data.collectionByHandle;
     
     // Process product data and format for frontend
     const products = shopifyCollection.products.edges.map((edge: any) => {

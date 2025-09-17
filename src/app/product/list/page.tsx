@@ -1,5 +1,5 @@
 import ProductListClient from '@/components/ui/product-list-client';
-import { getProducts } from '@/lib/shopify';
+import { ProductService } from '@/lib/shopify';
 
 // Configure static generation
 export const dynamic = 'force-static';
@@ -13,7 +13,7 @@ export const metadata = {
 
 export default async function ProductsPage() {
   try {
-    const products = await getProducts();
+    const products = await ProductService.getProducts();
     
 
     return (

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Cart } from '@/lib/shopify';
 
 // Create checkout process API route
 export async function POST(request: NextRequest) {
@@ -22,52 +23,20 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Create checkout using Shopify Storefront API
-    // If user is logged in (has accessToken), associate with that user
-    // Otherwise create anonymous checkout
+    // Use the wrapped service to get cart information
+    const cartResult = await Cart.getCart(cartId);
     
-    let checkoutUrl;
-    
-    // Check if cart exists
-    const getCartQuery = `
-      query getCart($cartId: ID!) {
-        cart(id: $cartId) {
-          id
-          checkoutUrl
-        }
-      }
-    `;
-    
-    const getCartVars = { cartId };
-    
-    const cartResponse = await fetch(
-      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
-        },
-        body: JSON.stringify({
-          query: getCartQuery,
-          variables: getCartVars
-        })
-      }
-    );
-    
-    const cartData = await cartResponse.json();
-    
-    if (cartData.errors) {
+    if (!cartResult.success) {
       return NextResponse.json({
         success: false,
-        message: "Failed to get shopping cart information: " + cartData.errors[0].message
+        message: "Failed to get shopping cart information: " + cartResult.message
       }, {
         status: 400,
         headers
       });
     }
     
-    if (!cartData.data || !cartData.data.cart) {
+    if (!cartResult.data?.cart) {
       return NextResponse.json({
         success: false,
         message: "Shopping cart not found"
@@ -78,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get cart checkout URL
-    checkoutUrl = cartData.data.cart.checkoutUrl;
+    const checkoutUrl = cartResult.data.cart.checkoutUrl;
     
     // If there's an accessToken, we can associate the cart with the user here
     // Note: Shopify Storefront API's cart already includes checkout URL

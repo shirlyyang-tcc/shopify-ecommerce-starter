@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { CollectionService } from '@/lib/shopify';
 
 // Get collection list API route
 export async function GET(request: NextRequest) {
@@ -13,65 +14,14 @@ export async function GET(request: NextRequest) {
     const first = parseInt(searchParams.get('first') || '20', 10);
     const after = searchParams.get('after') || null;
     
-    // Create GraphQL query
-    const graphqlQuery = `
-      query getCollections($first: Int!, $after: String) {
-        collections(first: $first, after: $after) {
-          pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
-          }
-          edges {
-            cursor
-            node {
-              id
-              title
-              handle
-              description
-              descriptionHtml
-              image {
-                url
-                altText
-              }
-              productsCount
-              updatedAt
-            }
-          }
-        }
-      }
-    `;
+    // Use the encapsulated service to get the collection list
+    const result = await CollectionService.getCollections({ first, after });
     
-    // Prepare variables
-    const variables = {
-      first,
-      after
-    };
-    
-    // Send request to Shopify
-    const response = await fetch(
-      `https://${process.env.SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_API_VERSION}/graphql.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!
-        },
-        body: JSON.stringify({
-          query: graphqlQuery,
-          variables
-        })
-      }
-    );
-    
-    const responseData = await response.json();
-    
-    // Check for errors
-    if (responseData.errors) {
+    if (!result.success) {
       return NextResponse.json({
         success: false,
-        message: "获取分类列表失败：" + responseData.errors[0].message
+        message: "Failed to fetch collection list: " + result.message,
+        errors: result.errors
       }, {
         status: 400,
         headers
@@ -79,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Process collection data and format for frontend
-    const collections = responseData.data.collections.edges.map((edge: any) => {
+    const collections = result.data?.collections?.edges?.map((edge: any) => {
       const { node } = edge;
       
       return {
@@ -93,20 +43,20 @@ export async function GET(request: NextRequest) {
         productsCount: node.productsCount,
         updatedAt: node.updatedAt
       };
-    });
+    }) || [];
     
     // Return collection list and pagination info
     return NextResponse.json({
       success: true,
       collections,
-      pageInfo: responseData.data.collections.pageInfo
+      pageInfo: result.data?.collections?.pageInfo
     }, {
       headers
     });
   } catch (error: any) {
     return NextResponse.json({
       success: false,
-      message: "获取分类列表过程中出现错误",
+      message: "An error occurred while fetching the collection list",
       error: error.message
     }, {
       status: 500,
