@@ -147,13 +147,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (customerAccessToken) { // Check if customerAccessToken is available
       requestBody = { customerAccessToken };
     }
+    console.log('requestBody', requestBody);
 
     try {
       const response = await fetch(`${apiBaseUrl}/cart/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Send an empty body {} for anonymous cart or { customerAccessToken: token } for logged-in user
-        body: Object.keys(requestBody).length > 0 ? JSON.stringify(requestBody) : undefined,
+        body: JSON.stringify(requestBody),
       });
       const data = await response.json();
       if (data.success && data.cart?.id) {

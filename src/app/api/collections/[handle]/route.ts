@@ -4,14 +4,14 @@ import { CollectionService } from '@/lib/shopify';
 // Get single collection detail API route
 export async function GET(
   request: NextRequest,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
   const headers = new Headers({
     'Content-Type': 'application/json'
   });
 
   try {
-    const handle = params.handle;
+    const { handle } = await params;
     
     if (!handle) {
       return NextResponse.json({
@@ -33,7 +33,7 @@ export async function GET(
     // 使用封装的服务获取商品集合详情
     const result = await CollectionService.getCollectionByHandle(handle, {
       first,
-      after,
+      after: after || undefined,
       sortKey,
       reverse
     });

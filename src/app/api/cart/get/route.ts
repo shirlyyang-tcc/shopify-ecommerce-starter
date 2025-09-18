@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     
     // Get cart information using the encapsulated service
     const result = await CartService.getCart(cartId);
-    
+    console.log('result', result);
     if (!result.success) {
       return NextResponse.json({
         success: false,

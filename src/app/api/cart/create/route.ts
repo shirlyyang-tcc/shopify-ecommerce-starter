@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error: any) {
+    console.log('error', error);
     return NextResponse.json({
       success: false,
       message: "An error occurred while creating the cart",

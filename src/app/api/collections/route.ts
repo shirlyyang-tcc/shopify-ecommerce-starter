@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const after = searchParams.get('after') || null;
     
     // Use the encapsulated service to get the collection list
-    const result = await CollectionService.getCollections({ first, after });
+    const result = await CollectionService.getCollections({ first, after: after || undefined });
     
     if (!result.success) {
       return NextResponse.json({
