@@ -3,7 +3,7 @@
  * Provides advanced business logic encapsulation, based on query collections and client
  */
 
-import { ProductImage, ProductVariant } from '@/interfaces/product';
+import { Product, ProductImage, ProductVariant } from '@/interfaces/product';
 import { shopifyClient, ShopifyAPIResponse } from './client';
 import * as queries from './queries';
 
@@ -166,7 +166,7 @@ export class ProductService {
     sortKey?: string;
     reverse?: boolean;
     query?: string;
-  } = {}): Promise<ShopifyAPIResponse> {
+  } = {}): Promise<Array<Product>> {
     const {
       first = 20,
       after,
@@ -192,7 +192,7 @@ export class ProductService {
         }));
   
         // Process variant data
-        const variants: ProductVariant[] = node.variants.edges.map(edge => ({
+        const variants: ProductVariant[] = node.variants.edges.map((edge: any) => ({
           id: edge.node.id,
           title: edge.node.title,
           sku: edge.node.sku || undefined,
@@ -247,7 +247,7 @@ export class ProductService {
       sortKey?: string;
       reverse?: boolean;
     } = {}
-  ): Promise<ShopifyAPIResponse> {
+  ): Promise<Array<Product>> {
     return this.getProducts({
       ...options,
       query: searchQuery,

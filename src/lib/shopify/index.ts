@@ -3,7 +3,6 @@
  * Unified export of all Shopify related tools and services
  */
 
-import { ProductService } from './services';
 
 // Export client
 export { ShopifyClient, shopifyClient, shopifyQuery, shopifyMutate } from './client';
