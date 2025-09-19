@@ -22,11 +22,10 @@ export const metadata: Metadata = {
   description: "Offering high-quality crystals from various brands, meeting your good luck needs.",
   icons: {
     icon: [
-      { url: '/favicon.svg' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
     ],
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 };
 
